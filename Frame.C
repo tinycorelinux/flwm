@@ -103,7 +103,7 @@ Frame::Frame(XWindow window, XWindowAttributes* existing) :
 #ifdef ML_TITLEBAR_COLOR
   char * titlebar_color_str = getenv("FLWM_TITLEBAR_COLOR");
   int r = 0x90, g =  0x90, b = 0x90;
-  int fields;
+  int fields = 0;
   if (titlebar_color_str) {
 	  fields = sscanf(titlebar_color_str, "%02X:%02X:%02X", &r, &g, &b);
   }

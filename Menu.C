@@ -514,6 +514,7 @@ ShowTabMenu(int tab)
   if (n > arraysize) {
     delete[] menu;
     menu = new Fl_Menu_Item[arraysize = n];
+    memset(menu, 0, n * sizeof(Fl_Menu_Item));
   }
 
   // build the menu:
