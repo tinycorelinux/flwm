@@ -29,9 +29,7 @@
 #define FL_INTERNALS 1
 
 #include <FL/x.H>
-#if FL_MAJOR_VERSION < 2
 # define XWindow Window
-#endif
 #include <FL/fl_draw.H>
 #include "Rotated.H"
 #include <stdlib.h>
@@ -392,20 +390,12 @@ void draw_rotated90(
   if (!str || !*str) return;
   if (w && h && !fl_not_clipped(x, y, w, h)) return;
   if (align & FL_ALIGN_CLIP) fl_clip(x, y, w, h);
-#if FL_MAJOR_VERSION>1
-  setrotfont(90);
-  int a = font->xfontstruct->ascent;
-  int d = font->xfontstruct->descent;
-  XRotDrawString(fl_display, font, fl_window, fl_gc,
-		 x+(w+a-d+1)/2, y+h, str, strlen(str));
-#else
   int a1 = align&(-16);
   if (align & FL_ALIGN_LEFT) a1 |= FL_ALIGN_TOP;
   if (align & FL_ALIGN_RIGHT) a1 |= FL_ALIGN_BOTTOM;
   if (align & FL_ALIGN_TOP) a1 |= FL_ALIGN_RIGHT;
   if (align & FL_ALIGN_BOTTOM) a1 |= FL_ALIGN_LEFT;
   fl_draw(str, -(y+h), x, h, w, (Fl_Align)a1, draw_rot90);
-#endif
   if (align & FL_ALIGN_CLIP) fl_pop_clip();
 }
 

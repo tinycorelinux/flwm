@@ -312,35 +312,6 @@ static struct {int key; void (*func)();} keybindings[] = {
 #endif
   {0}};
 
-#if FL_MAJOR_VERSION > 1
-// Define missing function, this should get put in fltk2.0:
-namespace fltk {
-int test_shortcut(int shortcut) {
-  if (!shortcut) return 0;
-
-  int shift = Fl::event_state();
-  // see if any required shift flags are off:
-  if ((shortcut&shift) != (shortcut&0x7fff0000)) return 0;
-  // record shift flags that are wrong:
-  int mismatch = (shortcut^shift)&0x7fff0000;
-  // these three must always be correct:
-  if (mismatch&(FL_META|FL_ALT|FL_CTRL)) return 0;
-
-  int key = shortcut & 0xffff;
-
-  // if shift is also correct, check for exactly equal keysyms:
-  if (!(mismatch&(FL_SHIFT)) && unsigned(key) == Fl::event_key()) return 1;
-
-  // try matching ascii, ignore shift:
-  if (key == event_text()[0]) return 1;
-
-  // kludge so that Ctrl+'_' works (as opposed to Ctrl+'^_'):
-  if ((shift&FL_CTRL) && key >= 0x3f && key <= 0x5F
-      && event_text()[0]==(key^0x40)) return 1;
-  return 0;
-}
-}
-#endif
 
 int Handle_Hotkey() {
   for (int i = 0; keybindings[i].key; i++) {

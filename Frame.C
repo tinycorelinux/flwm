@@ -86,9 +86,6 @@ Frame::Frame(XWindow window, XWindowAttributes* existing) :
   max_w_button(BUTTON_LEFT,BUTTON_TOP+BUTTON_H,BUTTON_W,BUTTON_H,"w"),
   min_w_button(BUTTON_LEFT,BUTTON_TOP+2*BUTTON_H,BUTTON_W,BUTTON_H,"W")
 {
-#if FL_MAJOR_VERSION > 1
-  clear_double_buffer();
-#endif
   close_button.callback(button_cb_static);
   iconize_button.callback(button_cb_static);
   max_h_button.type(FL_TOGGLE_BUTTON);
@@ -482,12 +479,10 @@ Frame::~Frame() {
   // a legal state value to this location:
   state_ = UNMAPPED;
 
-#if FL_MAJOR_VERSION < 2
   // fix fltk bug:
   fl_xfocus = 0;
   fl_xmousewin = 0;
   Fl::focus_ = 0;
-#endif
 
   // remove any pointers to this:
   Frame** cp; for (cp = &first; *cp; cp = &((*cp)->next))
@@ -1342,9 +1337,6 @@ void Frame::show_hide_buttons() {
 void Frame::resize(int, int, int, int) {}
 // For fltk2.0:
 void Frame::layout() {
-#if FL_MAJOR_VERSION>1
-  layout_damage(0); // actually this line is not needed in newest cvs fltk2.0
-#endif
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1381,9 +1373,6 @@ void Frame::save_protocol() {
 
 ////////////////////////////////////////////////////////////////
 // Drawing code:
-#if FL_MAJOR_VERSION>1
-# include <fltk/Box.h>
-#endif
 
 #ifdef TOPSIDE
 void Frame::draw() {
@@ -1448,13 +1437,7 @@ void Frame::draw() {
       fl_xyline(2, h()-3, w()-3, 2);
     }
 #else
-# if FL_MAJOR_VERSION>1
-    static fltk::FrameBox framebox(0,"AAAAJJWWNNTT");
-    drawstyle(style(),fltk::INVISIBLE); // INVISIBLE = draw edge only
-    framebox.draw(Rectangle(w(),h()));
-# else
     fl_frame("AAAAWWJJTTNN",0,0,w(),h());
-# endif
 #endif
     if (!flag(THIN_BORDER) && label_h > 3) {
 #ifdef SHOW_CLOCK
@@ -1501,19 +1484,12 @@ void Frame::redraw_clock() {
 #endif
 
 void FrameButton::draw() {
-#if FL_MAJOR_VERSION>1
-  const int x = value()?1:0;
-  const int y = x;
-  drawstyle(style(),flags()|fltk::OUTPUT);
-  FL_UP_BOX->draw(Rectangle(w(),h()));
-#else
   const int x = this->x();
   const int y = this->y();
   Fl_Widget::draw_box(value() ? FL_DOWN_FRAME : FL_UP_FRAME,
 					  value() ? fl_darker(FL_BACKGROUND2_COLOR)
 							  : fl_color_average(FL_BACKGROUND2_COLOR, FL_WHITE, 0.6)); // ML
 //  Fl_Widget::draw_box(value() ? FL_DOWN_FRAME : FL_UP_FRAME, FL_GRAY);
-#endif
   fl_color(parent()->labelcolor());
   switch (label()[0]) {
   case 'W':
@@ -1695,17 +1671,10 @@ static Frame* cursor_inside = 0;
 int Frame::handle(int e) {
   static int what, dx, dy, ix, iy, iw, ih;
   // see if child widget handles event:
-#if FL_MAJOR_VERSION > 1
-  if (fltk::Group::handle(e) && e != FL_ENTER && e != FL_MOVE) {
-    if (e == FL_PUSH) set_cursor(-1);
-    return 1;
-  }
-#else
   if (Fl_Group::handle(e) && e != FL_ENTER && e != FL_MOVE) {
     if (e == FL_PUSH) set_cursor(-1);
     return 1;
   }
-#endif
   switch (e) {
 
   case FL_SHOW:
