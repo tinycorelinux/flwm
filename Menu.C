@@ -233,7 +233,7 @@ logout_cb(Fl_Widget*, void*)
 {
   int pid=0;
   if (( pid=fork()) == 0) {
-    execlp("exittc","exittc");
+    execlp("exittc","exittc", NULL);
   }
 }
 
