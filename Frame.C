@@ -4,6 +4,8 @@
 // Last update: 2009-09-27
 #define TOPSIDE 1
 
+#define FL_INTERNALS 1
+
 #include "config.h"
 #include "Frame.H"
 #include "Desktop.H"

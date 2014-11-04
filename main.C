@@ -2,6 +2,8 @@
 // you can test the window controls.
 //#define TEST 1
 
+#define FL_INTERNALS 1
+
 #include "Frame.H"
 #include <X11/Xproto.h>
 #include <stdio.h>

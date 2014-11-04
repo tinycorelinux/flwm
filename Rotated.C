@@ -26,6 +26,8 @@
 
 /* ********************************************************************** */
 
+#define FL_INTERNALS 1
+
 #include <FL/x.H>
 #if FL_MAJOR_VERSION < 2
 # define XWindow Window
