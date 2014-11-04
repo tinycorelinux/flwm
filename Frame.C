@@ -1304,7 +1304,7 @@ void Frame::show_hide_buttons() {
     by += BUTTON_H;
   }
   else {
-    iconize.hide();
+    iconize_button.hide();
   }
   if (min_h == max_h || flag(KEEP_ASPECT|NO_RESIZE) ||
       !max_h_button.value() && by+label_w+2*BUTTON_H > h()-BUTTON_BOTTOM) {
