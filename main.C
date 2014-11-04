@@ -226,7 +226,7 @@ static int cursor = FL_CURSOR_ARROW;
 extern time_t wmx_time;
 void request_menu_refresh(int signum) {
 	if (signum == SIGUSR2) {
-		wmx_time = 42;	// arbitrary value so it won't match st_mtime fire/dir status field 
+		wmx_time = 42;	// arbitrary value so it won't match st_mtime fire/dir status field
 	}
 }
 // -------------ML
@@ -258,7 +258,7 @@ static void initialize() {
   XSelectInput(d, fl_xid(Root),
 	       SubstructureRedirectMask | SubstructureNotifyMask |
 	       ColormapChangeMask | PropertyChangeMask |
-	       ButtonPressMask | ButtonReleaseMask | 
+	       ButtonPressMask | ButtonReleaseMask |
 	       EnterWindowMask | LeaveWindowMask |
 	       KeyPressMask | KeyReleaseMask | KeymapStateMask);
 #if FL_MAJOR_VERSION>1

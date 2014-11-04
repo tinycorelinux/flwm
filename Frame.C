@@ -1,5 +1,5 @@
 // Frame.C
-// Some modifications by Michael A. Losh, tagged "ML" below, 
+// Some modifications by Michael A. Losh, tagged "ML" below,
 //   or bracketed by TOPSIDE manifest constant
 // Last update: 2009-09-27
 #define TOPSIDE 1
@@ -319,7 +319,7 @@ int overlap1(int p1, int l1, int p2, int l2) {
     ret = min(p1 + l1 - p2, l2);
   } else if (p2 <= p1 && p1 <= p2 + l2) {
     ret = min(p2 + l2 - p1, l1);
-  } 
+  }
   return ret;
 }
 
@@ -328,7 +328,7 @@ int overlap(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2) {
 }
 
 // Compute the overlap with existing windows.
-// For normal windows the overlapping area is taken into account plus a 
+// For normal windows the overlapping area is taken into account plus a
 // constant value for every overlapping window.
 // The active window counts twice.
 // For iconic windows half the overlapping area is taken into account.
@@ -361,7 +361,7 @@ void Frame::place_window() {
   int _h = h();
   int max_x = Root->x() + Root->w();
   int max_y = Root->y() + Root->h();
-  
+
   Frame *f1 = Frame::first;
   for(int i=0;; i++) {
     if (i==0) {
@@ -409,7 +409,7 @@ void Frame::place_window() {
     }
     if (min_overlap == 0) {
       break;
-    } 
+    }
   }
   x(best_x);
   y(best_y);
@@ -531,7 +531,7 @@ void Frame::getLabel(int del) {
     label_h = 0;
   if (shown())// && label_w > 3 && top > 3)
     XClearArea(fl_display, fl_xid(this), label_x, BUTTON_TOP, label_w, label_h, 1);
-#else  
+#else
   Fl_Widget::label(nu);
   if (nu) {
     fl_font(TITLE_FONT_SLOT, TITLE_FONT_SIZE);
@@ -637,21 +637,21 @@ int max_w_switch;
 // return width of contents when maximize button pressed:
 int Frame::maximize_width() {
   int W = max_w_switch; if (!W) W = Root->w();
-#ifdef TOPSIDE  
+#ifdef TOPSIDE
   return ((W-min_w)/inc_w) * inc_w + min_w;
 #else
   return ((W-TITLE_WIDTH-min_w)/inc_w) * inc_w + min_w;
-#endif  
+#endif
 }
 
 int max_h_switch;
 int Frame::maximize_height() {
   int H = max_h_switch; if (!H) H = Root->h();
-#ifdef TOPSIDE  
+#ifdef TOPSIDE
   return ((H-TITLE_HEIGHT-min_h)/inc_h) * inc_h + min_h;
 #else
   return ((H-min_h)/inc_h) * inc_h + min_h;
-#endif  
+#endif
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1079,7 +1079,7 @@ void Frame::set_size(int nx, int ny, int nw, int nh, int warp) {
     w(nw);
 #ifdef TOPSIDE
 	show_hide_buttons();
-#endif	
+#endif
   }
   if (nh != h()) {
     max_h_button.value(nh-dheight == maximize_height());
@@ -1088,11 +1088,11 @@ void Frame::set_size(int nx, int ny, int nw, int nh, int warp) {
     // see if label or close box moved, erase the minimum area:
 //     int old_label_y = label_y;
 //     int old_label_h = label_h;
-    h(nh); 
+    h(nh);
 #if 1 //def SHOW_CLOCK
 #ifdef TOPSIDE
     //int t = label_x + 3; // we have to clear the entire label area
-	XClearArea(fl_display,fl_xid(this), label_x, BUTTON_TOP, label_x + label_w, 
+	XClearArea(fl_display,fl_xid(this), label_x, BUTTON_TOP, label_x + label_w,
 				BUTTON_H, 1);  // ML
 #else
 	show_hide_buttons();
@@ -1234,7 +1234,7 @@ void Frame::show_hide_buttons() {
   }
 //  ML: OTHER BUTTONS ARE PLACED IN UPPER RIGHT
   bx = w() - BUTTON_RIGHT - BUTTON_W;
-  
+
 // RS: FIRST PLACE CLOSE BUTTON FARTHEST INTO UPPER RIGHT
 #if CLOSE_BOX
   if (flag(NO_CLOSE)) {
@@ -1259,7 +1259,7 @@ void Frame::show_hide_buttons() {
     max_w_button.show();
 	bx -= BUTTON_W;
   }
-  
+
   if (!transient_for()) {
     iconize_button.position(bx, BUTTON_TOP);
     iconize_button.show();
@@ -1274,7 +1274,7 @@ void Frame::show_hide_buttons() {
     XClearArea(fl_display,fl_xid(this), LEFT, TOP, w() - LEFT, TITLE_HEIGHT, 1);
   label_x = BUTTON_LEFT + BUTTON_W + left;
   label_w = bx - label_x;
-  
+
 }
 
 #else // have a left-side titlebar version
@@ -1340,7 +1340,7 @@ void Frame::show_hide_buttons() {
 void Frame::resize(int, int, int, int) {}
 // For fltk2.0:
 void Frame::layout() {
-#if FL_MAJOR_VERSION>1 
+#if FL_MAJOR_VERSION>1
   layout_damage(0); // actually this line is not needed in newest cvs fltk2.0
 #endif
 }
@@ -1389,13 +1389,13 @@ void Frame::draw() {
   //ML--------------------- Paint opaque titlebar background
 	  labelcolor(fl_contrast(FL_FOREGROUND_COLOR, FL_BACKGROUND2_COLOR));
 	  if (active()) {
-	 	 fl_rectf(2, 2, w() - 4, h()-4, 
+	 	 fl_rectf(2, 2, w() - 4, h()-4,
 		   fl_color_average(FL_BACKGROUND2_COLOR, FL_WHITE, 0.6)
 //        (ACTIVE_COLOR >> 16) & 0xFF, (ACTIVE_COLOR >> 8) & 0xFF, ACTIVE_COLOR & 0xFF
 			);
       }
       else {
-        fl_rectf(2, 2, w() - 4, h()-4, 
+        fl_rectf(2, 2, w() - 4, h()-4,
 		FL_BACKGROUND2_COLOR
 		//FL_GRAY
 					);
@@ -1428,7 +1428,7 @@ void Frame::draw() {
   //ML--------------------- Paint opaque titlebar background
 	  labelcolor(fl_contrast(FL_FOREGROUND_COLOR, FL_BACKGROUND2_COLOR));
 	  if (active()) {
-	 	 fl_rectf(2, 2, w() - 4, h()-4, 
+	 	 fl_rectf(2, 2, w() - 4, h()-4,
 		 fl_color_average(FL_BACKGROUND2_COLOR, FL_WHITE, 0.6) ); // ML
         //(ACTIVE_COLOR >> 16) & 0xFF, (ACTIVE_COLOR >> 8) & 0xFF, ACTIVE_COLOR & 0xFF);
       }
@@ -1479,7 +1479,7 @@ void Frame::draw() {
 	  // Only show the clock on the active frame.
 	  XClearArea(fl_display, fl_xid(this), 1, label_y+3,
 		     left-1, label_h-3, 0);
-#endif      
+#endif
       fl_color(labelcolor());
       fl_font(TITLE_FONT_SLOT, TITLE_FONT_SIZE);
       draw_rotated90(label(), 1, label_y+3, left-1, label_h-3,
@@ -1487,7 +1487,7 @@ void Frame::draw() {
     }
   }
 }
-#endif 
+#endif
 
 #ifdef SHOW_CLOCK
 void Frame::redraw_clock() {
@@ -1507,10 +1507,10 @@ void FrameButton::draw() {
 #else
   const int x = this->x();
   const int y = this->y();
-  Fl_Widget::draw_box(value() ? FL_DOWN_FRAME : FL_UP_FRAME, 
-					  value() ? fl_darker(FL_BACKGROUND2_COLOR) 
+  Fl_Widget::draw_box(value() ? FL_DOWN_FRAME : FL_UP_FRAME,
+					  value() ? fl_darker(FL_BACKGROUND2_COLOR)
 							  : fl_color_average(FL_BACKGROUND2_COLOR, FL_WHITE, 0.6)); // ML
-//  Fl_Widget::draw_box(value() ? FL_DOWN_FRAME : FL_UP_FRAME, FL_GRAY); 
+//  Fl_Widget::draw_box(value() ? FL_DOWN_FRAME : FL_UP_FRAME, FL_GRAY);
 #endif
   fl_color(parent()->labelcolor());
   switch (label()[0]) {
@@ -1562,7 +1562,7 @@ void Frame::button_cb(Fl_Button* b) {
 #if MINIMIZE_HEIGHT
 #ifdef TOPSIDE
       set_size(x(), y(), dwidth-1, 350,1);// <-- crude hack for now
-#else		   
+#else
       set_size(x(), y(), dwidth-1,
 	       min(h(),min(350,label_w+3*BUTTON_H+BUTTON_TOP+BUTTON_BOTTOM)),
 	       1);
@@ -1730,31 +1730,31 @@ int Frame::handle(int e) {
 
     switch (fl_xevent->type) {
     case EnterNotify:
-    
+
       // see if cursor skipped over frame and directly to interior:
       if (fl_xevent->xcrossing.detail == NotifyVirtual ||
 	  fl_xevent->xcrossing.detail == NotifyNonlinearVirtual)
 	cursor_inside = this;
-	
+
       else {
 	// cursor is now pointing at frame:
 	cursor_inside = 0;
       }
-                                                                    
-      // fall through to FL_MOVE:                                  
-      break;                                                   
-                                                                
-    case LeaveNotify:                                          
+
+      // fall through to FL_MOVE:
+      break;
+
+    case LeaveNotify:
       if (fl_xevent->xcrossing.detail == NotifyInferior) {
-        // cursor moved from frame to interior            
-        cursor_inside = this;                             
-        set_cursor(-1);                                   
-        return 1;                                         
-      }                                                   
-      return 1;                                           
-                                                           
-    default:                                              
-      return 0; // other X event we don't understand      
+        // cursor moved from frame to interior
+        cursor_inside = this;
+        set_cursor(-1);
+        return 1;
+      }
+      return 1;
+
+    default:
+      return 0; // other X event we don't understand
     }
     case FL_MOVE:
     if (Fl::belowmouse() != this || cursor_inside == this)

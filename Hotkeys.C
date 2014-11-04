@@ -124,20 +124,20 @@ static void GrowFrame(int wbump, int hbump) {
 	  ny = f->y();
 	  nw = f->w();
 	  nh = f->h();
-	  if (wbump != 0 && f->w() >= minw) {		  
+	  if (wbump != 0 && f->w() >= minw) {
 		  nw +=  wbump * 32;
 		  if (nw < minw) nw = minw;
 		  if (nw > Fl::w()) nw = Fl::w();
-		  if (nx + nw > Fl::w()) 
+		  if (nx + nw > Fl::w())
 			nx = Fl::w() - nw;
 	  }
-	  
+
 	  if (hbump != 0 && f->h() >= minh) {
 		  nh += hbump * 32;
 		  if (nh < minh) nh = minh;
 		  if (nh > Fl::h()) nh = Fl::h();
 		  ny = f->y();
-		  if (ny + nh > Fl::h()) 
+		  if (ny + nh > Fl::h())
 			ny = Fl::h() - nh;
 		  else
 		    ny = f->y() + f->h() - nh;
@@ -167,7 +167,7 @@ static void GrowTaller(void) { // Ctrl+Alt+PageUp
 	GrowFrame(0, +1);
 }
 
-static void GrowShorter(void) { // Ctrl+Alt+PageDn 
+static void GrowShorter(void) { // Ctrl+Alt+PageDn
 	GrowFrame(0, -1);
 }
 
@@ -175,7 +175,7 @@ static void ToggleVertMax(void) {// Ctrl+Alt+V
 	static int nonmax_h = Fl::h() - 64;
 	static int nonmax_y = 32;
 	Frame* f = Frame::activeFrame();
-	
+
 	if (f->h() < Fl::h() - 16) {
 		nonmax_h = f->h();
 		nonmax_y = f->y();
@@ -190,7 +190,7 @@ static void ToggleHorzMax(void) {// Ctrl+Alt+H
 	static int nonmax_w = Fl::w() - 64;
 	static int nonmax_x = 32;
 	Frame* f = Frame::activeFrame();
-	
+
 	if (f->w() < Fl::w() - 16) {
 		nonmax_w = f->w();
 		nonmax_x = f->x();
@@ -207,7 +207,7 @@ static void ToggleWinMax(void) {// Ctrl+Alt+M
 	int is_vmax = -1;
 	if (f->w() > Fl::w() - 16) is_hmax = 1;
 	if (f->h() > Fl::h() - 16) is_vmax = 1;
-	
+
 	if ((is_hmax * is_vmax) > 0 || is_hmax > 0) ToggleVertMax();
 	if ((is_hmax * is_vmax) > 0 || is_vmax > 0) ToggleHorzMax();
 }

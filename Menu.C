@@ -301,7 +301,7 @@ init(Fl_Menu_Item& m, const char* data)
 
 #if WMX_MENU_ITEMS
 
-// wmxlist is an array of char* pointers (for efficient sorting purposes), 
+// wmxlist is an array of char* pointers (for efficient sorting purposes),
 // which are stored in wmxbuffer (for memory efficiency and to avoid
 // freeing and fragmentation)
 static char** wmxlist = NULL;
