@@ -22,7 +22,7 @@ static void PreviousWindow() { // Alt+Shift+Tab
 
 #endif
 
-#if DESKTOPS
+#if DESKTOPS && WMX_DESK_HOTKEYS
 
 static void NextDesk() {
   if (Desktop::current()) {
@@ -40,6 +40,10 @@ static void PreviousDesk() {
   }
   Desktop::current(search);
 }
+
+#endif
+
+#if DESKTOPS && (DESKTOP_HOTKEYS || KWM_HOTKEYS)
 
 // warning: this assummes it is bound to Fn key:
 static void DeskNumber() {
@@ -115,7 +119,7 @@ static void MoveDown(void) { // Ctrl+Alt+Down
 	MoveFrame(0, +1);
 }
 static void GrowFrame(int wbump, int hbump) {
-  int wincr, hincr, nx, ny, nw, nh, xspace, yspace;
+  int nx, ny, nw, nh;
   Frame* f = Frame::activeFrame();
   if (f) {
 	  int minw = 8 * BUTTON_W;

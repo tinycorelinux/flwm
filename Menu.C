@@ -147,12 +147,6 @@ label_measure(const Fl_Label* o, int& W, int& H)
 
 ////////////////////////////////////////////////////////////////
 
-static void
-cancel_cb(Fl_Widget* w, void*)
-{
-  w->window()->hide();
-}
-
 #if DESKTOPS
 
 static void
@@ -170,6 +164,12 @@ delete_desktop_cb(Fl_Widget*, void* v)
 #if ASK_FOR_NEW_DESKTOP_NAME
 
 static Fl_Input* new_desktop_input = 0;
+
+static void
+cancel_cb(Fl_Widget* w, void*)
+{
+  w->window()->hide();
+}
 
 static void
 new_desktop_ok_cb(Fl_Widget* w, void*)
