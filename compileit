@@ -1,7 +1,14 @@
-#!/bin/sh
-for C in "main.C" "Frame.C" "Rotated.C" "Menu.C" "FrameWindow.C" "Desktop.C" "Hotkeys.C"
+#!/bin/sh -e
+
+CXXFLAGS="$CXXFLAGS `fltk-config --cxxflags`"
+CXXFLAGS="$CXXFLAGS -Wall -ffunction-sections -fdata-sections"
+LDFLAGS="$LDFLAGS `fltk-config --ldflags --use-images`"
+LDFLAGS="$LDFLAGS -Wl,-gc-sections"
+
+for C in *.C
 do
-	g++ -march=i486 -mtune=i686 -Os -fno-exceptions -fno-rtti -fpic -c "$C"
+	g++ $CXXFLAGS -Os -fno-exceptions -fno-rtti -c "$C"
 done
-g++ -lfltk -lfltk_images -lfltk_forms -lpng -o flwm main.o Frame.o Rotated.o Menu.o FrameWindow.o Desktop.o Hotkeys.o
-strip flwm
+
+g++ -o flwm *.o $CXXFLAGS $LDFLAGS
+sstrip flwm
