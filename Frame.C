@@ -1,6 +1,8 @@
 // Frame.C
 // Some modifications by Michael A. Losh, tagged "ML" below, 
+//   or bracketed by TOPSIDE manifest constant
 // Last update: 2009-09-27
+#define TOPSIDE 1
 
 #include "config.h"
 #include "Frame.H"
@@ -142,7 +144,11 @@ Frame::Frame(XWindow window, XWindowAttributes* existing) :
     _wm_quit_app	= XInternAtom(fl_display, "_WM_QUIT_APP",	0);
   }
 
+#ifdef TOPSIDE
+  label_x = label_h = label_w = 0;
+#else
   label_y = label_h = label_w = 0;
+#endif
   getLabel();
   // getIconLabel();
 
@@ -516,6 +522,16 @@ void Frame::getLabel(int del) {
   } else {
     if (!nu) return;
   }
+#ifdef TOPSIDE
+  Fl_Widget::label(nu);
+  if (nu) {
+    fl_font(TITLE_FONT_SLOT, TITLE_FONT_SIZE);
+    label_h = int(fl_size())+6;
+  } else
+    label_h = 0;
+  if (shown())// && label_w > 3 && top > 3)
+    XClearArea(fl_display, fl_xid(this), label_x, BUTTON_TOP, label_w, label_h, 1);
+#else  
   Fl_Widget::label(nu);
   if (nu) {
     fl_font(TITLE_FONT_SLOT, TITLE_FONT_SIZE);
@@ -524,6 +540,7 @@ void Frame::getLabel(int del) {
     label_w = 0;
   if (shown() && label_h > 3 && left > 3)
     XClearArea(fl_display, fl_xid(this), 1, label_y+3, left-1, label_h-3, 1);
+#endif
 }
 
 ////////////////////////////////////////////////////////////////
@@ -620,13 +637,21 @@ int max_w_switch;
 // return width of contents when maximize button pressed:
 int Frame::maximize_width() {
   int W = max_w_switch; if (!W) W = Root->w();
+#ifdef TOPSIDE  
+  return ((W-min_w)/inc_w) * inc_w + min_w;
+#else
   return ((W-TITLE_WIDTH-min_w)/inc_w) * inc_w + min_w;
+#endif  
 }
 
 int max_h_switch;
 int Frame::maximize_height() {
   int H = max_h_switch; if (!H) H = Root->h();
+#ifdef TOPSIDE  
+  return ((H-TITLE_HEIGHT-min_h)/inc_h) * inc_h + min_h;
+#else
   return ((H-min_h)/inc_h) * inc_h + min_h;
+#endif  
 }
 
 ////////////////////////////////////////////////////////////////
@@ -800,8 +825,13 @@ int Frame::activate(int warp) {
     ;
   } else if (warp==2) {
     // warp to point at title:
+#ifdef TOPSIDE
+    XWarpPointer(fl_display, None, fl_xid(this), 0,0,0,0, left/2+1,
+                 min(label_x+label_w/2+1, label_h/2));
+#else
     XWarpPointer(fl_display, None, fl_xid(this), 0,0,0,0, left/2+1,
                  min(label_y+label_w/2+1,h()/2));
+#endif
   } else {
     warp_pointer();
   }
@@ -813,6 +843,13 @@ int Frame::activate(int warp) {
   if (active_ != this) {
     if (active_) active_->deactivate();
     active_ = this;
+//#ifdef ACTIVE_COLOR
+//    XSetWindowAttributes a;
+//    a.background_pixel = fl_xpixel(FL_SELECTION_COLOR);
+//    XChangeWindowAttributes(fl_display, fl_xid(this), CWBackPixel, &a);
+//    labelcolor(fl_contrast(FL_FOREGROUND_COLOR, FL_BACKGROUND_COLOR)); // ML changed color comparison
+//    XClearArea(fl_display, fl_xid(this), 2, 2, w()-4, h()-4, 1);
+//#else
     XSetWindowAttributes a;
     a.background_pixel = fl_xpixel(FL_BACKGROUND2_COLOR);
     XChangeWindowAttributes(fl_display, fl_xid(this), CWBackPixel, &a);
@@ -1040,6 +1077,9 @@ void Frame::set_size(int nx, int ny, int nw, int nh, int warp) {
     int minw = (nw < w()) ? nw : w();
     XClearArea(fl_display, fl_xid(this), minw-RIGHT, 0, RIGHT, nh, 1);
     w(nw);
+#ifdef TOPSIDE
+	show_hide_buttons();
+#endif	
   }
   if (nh != h()) {
     max_h_button.value(nh-dheight == maximize_height());
@@ -1050,9 +1090,15 @@ void Frame::set_size(int nx, int ny, int nw, int nh, int warp) {
 //     int old_label_h = label_h;
     h(nh); 
 #if 1 //def SHOW_CLOCK
+#ifdef TOPSIDE
+    //int t = label_x + 3; // we have to clear the entire label area
+	XClearArea(fl_display,fl_xid(this), label_x, BUTTON_TOP, label_x + label_w, 
+				BUTTON_H, 1);  // ML
+#else
 	show_hide_buttons();
     //int t = label_y + 3; // we have to clear the entire label area
 	XClearArea(fl_display,fl_xid(this), 1, label_y, left-1, nh-label_y, 1);  // ML
+#endif
 #else
     int t = nh;
     if (label_y != old_label_y) {
@@ -1133,10 +1179,17 @@ void Frame::updateBorder() {
   if (flag(NO_BORDER)) {
     left = top = dwidth = dheight = 0;
   } else {
+#ifdef TOPSIDE
+    left = LEFT;
+    dwidth = left+RIGHT;
+    top = flag(THIN_BORDER) ? TOP : TOP+TITLE_HEIGHT;
+    dheight = top+BOTTOM;
+#else
     left = flag(THIN_BORDER) ? LEFT : LEFT+TITLE_WIDTH;
     dwidth = left+RIGHT;
     top = TOP;
     dheight = TOP+BOTTOM;
+#endif
   }
   nx -= left;
   ny -= top;
@@ -1158,6 +1211,74 @@ void Frame::updateBorder() {
 
 // position and show the buttons according to current border, size,
 // and other state information:
+#ifdef TOPSIDE
+ // FIRST, the TOPSIDE VERSION of the function
+void Frame::show_hide_buttons() {
+  if (flag(THIN_BORDER|NO_BORDER)) {
+    iconize_button.hide();
+    max_w_button.hide();
+    min_w_button.hide();
+    max_h_button.hide();
+    close_button.hide();
+    return;
+  }
+  int bx = BUTTON_LEFT;
+
+// RS: ICONIZE BUTTON IS TOP LEFT --
+  if (transient_for()) {
+	// don't show iconize button for "transient" (e.g. dialog box) windows
+    iconize_button.hide();
+  } else {
+    iconize_button.show();
+    iconize_button.position(BUTTON_LEFT, BUTTON_TOP);
+  }
+//  ML: OTHER BUTTONS ARE PLACED IN UPPER RIGHT
+  bx = w() - BUTTON_RIGHT - BUTTON_W;
+  
+// RS: FIRST PLACE CLOSE BUTTON FARTHEST INTO UPPER RIGHT
+#if CLOSE_BOX
+  if (flag(NO_CLOSE)) {
+#endif
+    close_button.hide();
+#if CLOSE_BOX
+  } else {
+    close_button.show();
+    close_button.position(bx, BUTTON_TOP);
+	bx -= BUTTON_W;
+  }
+#endif
+  if (transient_for()) {
+	// don't show resize and iconize buttons for "transient" (e.g. dialog box) windows
+    max_w_button.hide();
+    max_h_button.hide();
+  } else {
+    max_h_button.position(bx, BUTTON_TOP);
+    max_h_button.show();
+	bx -= BUTTON_W;
+    max_w_button.position(bx, BUTTON_TOP);
+    max_w_button.show();
+	bx -= BUTTON_W;
+  }
+  
+  if (!transient_for()) {
+    iconize_button.position(bx, BUTTON_TOP);
+    iconize_button.show();
+	bx -= BUTTON_W;
+  }
+  else {
+    iconize_button.hide();
+
+  }
+  if (label_x != bx && shown())
+//ML Buttons look garbled after expanding, so let's just clear the whole area
+    XClearArea(fl_display,fl_xid(this), LEFT, TOP, w() - LEFT, TITLE_HEIGHT, 1);
+  label_x = BUTTON_LEFT + BUTTON_W + left;
+  label_w = bx - label_x;
+  
+}
+
+#else // have a left-side titlebar version
+
 void Frame::show_hide_buttons() {
   if (flag(THIN_BORDER|NO_BORDER)) {
     iconize_button.hide();
@@ -1181,21 +1302,14 @@ void Frame::show_hide_buttons() {
     by += BUTTON_H;
   }
 #endif
-//  ML: And minimize button is next, if it is enabled (off in current config.h) 
-#if MINIMIZE_BOX
   if (!transient_for()) {
-    min_w_button.position(BUTTON_LEFT,by);
-    min_w_button.show();
+    iconize_button.position(BUTTON_LEFT,by);
+    iconize_button.show();
     by += BUTTON_H;
   }
   else {
-#else
-    min_w_button.hide();
-#endif
-#if MINIMIZE_BOX
+    iconize.hide();
   }
-#endif
-// -- END ML
   if (min_h == max_h || flag(KEEP_ASPECT|NO_RESIZE) ||
       !max_h_button.value() && by+label_w+2*BUTTON_H > h()-BUTTON_BOTTOM) {
     max_h_button.hide();
@@ -1213,20 +1327,14 @@ void Frame::show_hide_buttons() {
     by += BUTTON_H;
   }
   if (label_y != by && shown())
+//ML    XClearArea(fl_display,fl_xid(this), 1, by, left-1, label_h+label_y-by, 1);
+//ML Buttons look garbled after expanding, so let's just clear the whole area
     XClearArea(fl_display,fl_xid(this), 1, 1, left-1, h()-1, 1);
   label_y = by;
-  
-//ML MOVED ICONIZE BUTTON TO BOTTOM --   
-  if (by+BUTTON_H > h()-BUTTON_BOTTOM || transient_for()) {
-	label_h = h()-BOTTOM-by;
-    iconize_button.hide();
-  } else {
-    iconize_button.show();
-    iconize_button.position(BUTTON_LEFT,h()-(BUTTON_BOTTOM+BUTTON_H));
-	label_h = iconize_button.y()-by;
-  }
 // -- END ML
+
 }
+#endif
 
 // make sure fltk does not try to set the window size:
 void Frame::resize(int, int, int, int) {}
@@ -1275,6 +1383,46 @@ void Frame::save_protocol() {
 # include <fltk/Box.h>
 #endif
 
+#ifdef TOPSIDE
+void Frame::draw() {
+  if (flag(NO_BORDER)) return;
+  //ML--------------------- Paint opaque titlebar background
+	  labelcolor(fl_contrast(FL_FOREGROUND_COLOR, FL_BACKGROUND2_COLOR));
+	  if (active()) {
+	 	 fl_rectf(2, 2, w() - 4, h()-4, 
+		   fl_color_average(FL_BACKGROUND2_COLOR, FL_WHITE, 0.6)
+//        (ACTIVE_COLOR >> 16) & 0xFF, (ACTIVE_COLOR >> 8) & 0xFF, ACTIVE_COLOR & 0xFF
+			);
+      }
+      else {
+        fl_rectf(2, 2, w() - 4, h()-4, 
+		FL_BACKGROUND2_COLOR
+		//FL_GRAY
+					);
+      }
+	  // ------------------ML
+
+  if (!flag(THIN_BORDER)) Fl_Window::draw();
+  if (damage() != FL_DAMAGE_CHILD) {
+
+#ifdef ACTIVE_COLOR
+    fl_frame2(active() ? "AAAAJJWW" : "AAAAJJWWNNTT",0,0,w(),h());
+    if (active()) {
+      fl_color(FL_GRAY_RAMP+('N'-'A'));
+      fl_xyline(2, h()-3, w()-3, 2);
+    }
+#else
+    fl_frame("AAAAWWJJTTNN",0,0,w(),h());
+#endif
+    if (!flag(THIN_BORDER) && label_h > 3) {
+      fl_color(labelcolor());
+      fl_font(TITLE_FONT_SLOT, TITLE_FONT_SIZE);
+      fl_draw(label(), label_x, BUTTON_TOP, label_w, BUTTON_H,
+		      Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_CLIP), 0, 0);
+    }
+  }
+}
+#else
 void Frame::draw() {
   if (flag(NO_BORDER)) return;
   //ML--------------------- Paint opaque titlebar background
@@ -1339,6 +1487,7 @@ void Frame::draw() {
     }
   }
 }
+#endif 
 
 #ifdef SHOW_CLOCK
 void Frame::redraw_clock() {
@@ -1366,13 +1515,7 @@ void FrameButton::draw() {
   fl_color(parent()->labelcolor());
   switch (label()[0]) {
   case 'W':
-#if MINIMIZE_ARROW
-    fl_line (x+2,y+(h())/2,x+w()-4,y+h()/2);
-    fl_line (x+2,y+(h())/2,x+2+4,y+h()/2+4);
-    fl_line (x+2,y+(h())/2,x+2+4,y+h()/2-4);
-#else
     fl_rect(x+(h()-7)/2,y+3,2,h()-6);
-#endif
     return;
   case 'w':
     fl_rect(x+2,y+(h()-7)/2,w()-4,7);
@@ -1394,7 +1537,7 @@ void FrameButton::draw() {
     return;
   case 'i':
 #if ICONIZE_BOX
-    fl_rect(x+w()/2-1,y+h()/2-1,3,3);
+    fl_line (x+2, y+(h()-4), x+w()-4, y+h()-4);
 #endif
     return;
   }
@@ -1417,9 +1560,13 @@ void Frame::button_cb(Fl_Button* b) {
 #endif
       }
 #if MINIMIZE_HEIGHT
+#ifdef TOPSIDE
+      set_size(x(), y(), dwidth-1, 350,1);// <-- crude hack for now
+#else		   
       set_size(x(), y(), dwidth-1,
 	       min(h(),min(350,label_w+3*BUTTON_H+BUTTON_TOP+BUTTON_BOTTOM)),
 	       1);
+#endif // not topside
 #else
       set_size(x(), y(), dwidth-1, h(), 1);
 #endif

@@ -1,4 +1,6 @@
 // Frame.H
+// Some modifications by Michael A. Losh, tagged "ML" below, 
+//   or bracketed by TOPSIDE manifest constant
 
 // Each X window being managed by fltk has one of these
 
@@ -79,8 +81,13 @@ class Frame : public Fl_Window {
   int app_border_width;	// value of border_width application tried to set
 
   int left, top, dwidth, dheight; // current thickness of border
+#ifdef TOPSIDE
+  int label_x, label_w; // location of label
+  int label_h;		    // measured height of printed label
+#else
   int label_y, label_h; // location of label
   int label_w;		    // measured width of printed label
+#endif 
 
   XWindow transient_for_xid; // value from X
   Frame* transient_for_; // the frame for that xid, if found
