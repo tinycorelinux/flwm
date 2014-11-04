@@ -2,7 +2,6 @@
 // Some modifications by Michael A. Losh, tagged "ML" below,
 //   or bracketed by TOPSIDE manifest constant
 // Last update: 2009-09-27
-#define TOPSIDE 1
 
 #define FL_INTERNALS 1
 

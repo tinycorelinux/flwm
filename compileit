@@ -5,10 +5,10 @@ CXXFLAGS="$CXXFLAGS -Wall -ffunction-sections -fdata-sections"
 LDFLAGS="$LDFLAGS `fltk-config --ldflags --use-images`"
 LDFLAGS="$LDFLAGS -Wl,-gc-sections"
 
-for C in *.C
-do
-	g++ $CXXFLAGS -Os -fno-exceptions -fno-rtti -c "$C"
-done
-
-g++ -o flwm *.o $CXXFLAGS $LDFLAGS
+echo Building flwm...
+g++ -o flwm *.C $CXXFLAGS $LDFLAGS
 sstrip flwm
+
+echo Building flwm_topside...
+g++ -o flwm_topside -DTOPSIDE *.C $CXXFLAGS $LDFLAGS
+sstrip flwm_topside
