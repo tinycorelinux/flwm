@@ -1,0 +1,277 @@
+.\"Man page for flwm, by Bill Spitzak.
+.TH flwm 1 "15 May 1999"
+.SH NAME
+\fIflwm\fR - The Fast Light Window Manager
+.SH SYNOPSIS
+.B flwm
+[-d[isplay] host:n.n] [-g[eometry] WxH+X+Y]
+[-fg color] [-bg color] [-bg2 color]
+.SH DESCRIPTION
+.I flwm
+is a very small and fast X window manager, featuring
+.I no
+icons and "sideways" title bars.
+
+.SH .xinitrc / .xsession
+
+To run flwm as your login script, you need to create or replace
+~/.xinitrc or ~/.xsession (or both).  Newer Linux systems with a login
+panel use .xsession, older systems where X was started after login
+use .xinitrc.  You may also have to pick "default" from the "type of
+session" popup in your login window.
+
+The .xinitrc or .xsession file should look like this:
+
+.nf
+#!/bin/sh
+xsetroot -solid \\#006060
+xrdb .Xresources
+# xset, xmodmap, other configuration programs
+flwm &
+WindowManager=$!
+# xterm, other automatically-launched programs
+wait $WindowManager
+.fi
+
+.SH SWITCHES
+
+.B -d[isplay] host:#.#
+Sets the display and screen for flwm to manage
+
+.B -v[isual] #
+Visual number to use (probably only works for non-color-mapped ones)
+
+.B -g[eometry] WxH+X+Y
+Flwm will act as though the screen is only the specified area.  It
+will constrain initial window positions to this area and stop them at
+the edges when dragging them around.  This can be used to surround the
+screen with fixed "toolbars" that are never covered by windows.  These
+toolbars must be created by a program using override-redirect so that
+flwm does not try to move them.
+
+.B -m[aximum] WxH
+Set the size of windows when the maximize buttons are pushed.
+Normally this is the size of the screen.  This is useful for
+XFree86 servers that are run with a smaller screen than display
+memory.
+
+.B -x
+The menu will say "Exit" instead of "Logout" and will not ask for
+confirmation.  This is a good idea if you are running flwm in some
+other way than with exec at the end of .xinitrc, since it won't log
+you out then.
+
+.B -fg color, -bg color
+Set the label color and the color of the window frames and the
+menu.
+
+.B -c[ursor] #
+What cursor to use on the desktop (you will have to experiment to find
+out what each number means)
+
+.B -cfg color, -cbg color
+Colors for the desktop and window resizing cursors
+
+In addition to these switches there is much customization that can be
+done by editing the config.h file in the source code and recompiling.
+GCC is your friend.
+
+.SH MENU ITEMS
+
+Flwm can launch programs from its menu.  This is controlled by files
+in the directory
+.B ~/.wmx
+(this was chosen to be compatible with wmx and wm2).
+
+Each executable file in ~/.wmx is a program to run.  Usually these are
+symbolic links to the real program or very short shell scripts.
+
+Each subdirectory creates a child menu so you can build a hierarchy
+(up to 10 deep).
+
+Cut and paste the following lines you your shell to create some
+example files:
+
+.nf
+mkdir ~/.wmx
+ln -s /usr/bin/gimp ~/.wmx/"The Gimp"
+cat << EOF > ~/.wmx/"Terminal"
+#! /bin/sh
+/usr/local/bin/rxvt -ut
+EOF
+chmod +x !*
+.fi
+
+RedHat users can run the program
+.B flwm_wmconfig
+to read the /etc/X11/wmconfig directory and produce an initial set of
+menu items.
+
+.SH MOUSE USAGE
+
+.B Left-click
+on a window border raises window.
+
+.B Left-drag
+will move the window when in the title bar, and will resize it in the
+edges.  If the window cannot be resized then it will always move the
+window.  What it will do is indicated by the cursor shape.
+
+.B Middle-click
+on a window border lowers it to bottom.
+
+.B Middle-drag
+anywhere on window border will move the window.
+
+When you move a window it will stop at the edges of the screen.
+Dragging about 150 pixels further will unstick it and let you drag it
+off the screen.
+
+.B Right-click
+on a window border pops up the menu.
+
+.B Any button
+on the desktop will pop up the menu.
+
+.SH BUTTONS
+
+The empty button "iconizes" the window: it will completely vanish.  To
+get it back use the menu.
+
+The vertical-bar button "shades" (or "Venetian blinds"?) the window.
+Click it again to restore the window.  You can also resize the shaded
+window to a new height or "open" it by resizing horizontally.
+
+The two buttons below it toggle maximum height and/or maximum width.
+
+The X button at the bottom closes the window.
+
+.SH MENU
+
+.B Right-click
+on window border, or
+.B any-click
+on the desktop, or typing
+.B Alt+Esc
+or
+.B Alt+Tab
+or
+.B Alt+Shift+Tab
+will pop up the menu.
+
+Releasing Alt will pick the current menu item.  This makes flwm work
+very much (exactly?) like the Windows 95 shortcuts.
+
+Each main window is a menu item.  If the window is "iconized" the
+little picture shows an open rectangle, otherwise it shows a filled
+rectangle.  Picking a menu item deiconizes and raises that window and
+warps the pointer so it is current.
+
+.B New desktop
+asks for a name of a new desktop and makes it current.  The desktop
+will initially be empty (except for sticky items).
+
+To move windows to the current desktop, pop up the menu and pick
+windows off of other desktops (if using the keyboard, use left
+arrow to go to the desktop names, move up and down to the other
+desktop, and use right arrow to enter that desktop).  The window will
+be moved from the other desktop to the current one.
+
+To switch to another desktop, pick the title of the desktop (if using
+the keyboard, use left arrow to go to the desktop names, move up and
+down to the other desktop).
+
+If a desktop is empty you can delete it.  Its sub menu will show
+.B delete this desktop.
+Pick that and the desktop is gone.
+
+.B Sticky
+is a special "desktop": windows on it appear on all desktops.  To make
+a window "sticky" switch to the Sticky desktop and pick the window off
+its current desktop (thus "moving" it to the Sticky desktop).  To
+"unstick" a window go to another desktop and pick the window off the
+sticky desktop menu.
+
+.B New xterm
+will run a new xterm on the current desktop.  Useful if
+you accidentally close everything.  This item does not appear if a
+~/.wmx directory exists.
+
+.B Logout
+will ask for confirmation and if so flwm will exit.
+
+.B Exit
+will exit flwm without confirmation.  This item will appear if flwm
+was run with the -x switch.
+
+.SH HOT KEYS
+
+These are the defaults, the hot keys may be different depending on how
+flwm was compiled:
+
+.B Alt+Escape
+Pops up the menu with the current window preselected
+
+.B Alt+Tab
+Pops up the menu with the next window preselected
+
+.B Alt+Shift+Tab
+Pops up the menu with the previous window preselected
+
+.B Ctrl+Tab
+Switch to the next desktop.
+
+.B Ctrl+Shift+Tab
+Switch to the previous desktop.
+
+.B Ctrl+Function key
+Switch to desktop N.
+
+.B Alt+Up
+Raise the current window.
+
+.B Alt+Down
+Lower the current window.
+
+.B Alt+Delete
+Close the current window (same as clicking close box).
+
+.B Alt+Enter
+"Iconizes" (hides) the current window.
+
+.SH BUGS
+
+It is impossible to move windows smaller than 100 pixels off
+the screen.
+
+Only obeys "keep aspect" if the aspect ratio is 1x1.
+
+.SH ACKNOWLEDGEMENTS
+
+This program was inspired by and much code copied from the "wm2"
+window manager by Chris Cannam <cannam@zands.demon.co.uk>
+
+Thanks to Ron Koerner for the recursive .wmx directory reading code.
+
+.SH COPYRIGHT
+
+Copyright (C) 1999 Bill Spitzak
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at
+your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+USA.
+
+.SH AUTHORS
+
+Written by Bill Spitzak		spitzak@d2.com

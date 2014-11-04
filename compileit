@@ -1,0 +1,7 @@
+#!/bin/sh
+for C in "main.C" "Frame.C" "Rotated.C" "Menu.C" "FrameWindow.C" "Desktop.C" "Hotkeys.C"
+do
+	g++ -march=i486 -mtune=i686 -Os -fno-exceptions -fno-rtti -fpic -c "$C"
+done
+g++ -lfltk -lfltk_images -lfltk_forms -lpng -o flwm main.o Frame.o Rotated.o Menu.o FrameWindow.o Desktop.o Hotkeys.o
+strip flwm

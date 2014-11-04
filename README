@@ -1,0 +1,121 @@
+flwm Version 0.25
+
+----------------------------------------------------------------
+How to compile flwm:
+----------------------------------------------------------------
+
+You need fltk.  If you do not have it yet, download it from
+http://www.fltk.org, and compile and install it.
+
+To customize flwm (for instance to turn on click-to-type), edit the
+config.h file.
+
+Type "./configure" (not necessary if you have gmake)
+
+Type "make"
+
+Become superuser and type "make install"
+
+If you wish to edit the code, type "make depend"
+
+----------------------------------------------------------------
+How to run flwm:
+----------------------------------------------------------------
+
+To run flwm as your login script, you need to create or replace
+~/.xinitrc or ~/.xsession (or both).  Newer Linux systems with a login
+panel use .xsession, older systems where X was started after login
+use .xinitrc.  You may also have to pick "default" from the "type of
+session" popup in your login window.
+
+The .xinitrc or .xsession file should look like this:
+
+#!/bin/sh
+xsetroot -solid \#006060
+xrdb .Xresources
+# xset, xmodmap, other configuration programs
+flwm &
+WindowManager=$!
+# xterm, other automatically-launched programs
+wait $WindowManager
+
+ALLOWING THE WINDOW MANAGER TO EXIT W/O LOGOUT:
+
+That is the most user-friendly but it logs you out when flwm exits,
+which means it logs out if flwm crashes (:-)) and you cannot switch
+window managers.  Another possibility is to run another program last
+so flwm can exit, by putting lines like this at the end:
+
+/usr/local/bin/flwm -x &
+exec rxvt -geometry 80x11+8-8 -C -T "Ctrl-D_to_logout"
+
+The -x tells flwm to put "exit" on the menu rather than "logout".
+
+REDHAT USERS:
+
+You may want to run the program "./flwm_wmconfig".  This will read
+RedHat's window manager menu configuration files and build an initial
+.wmx directory so you have a large set of menu items that run
+programs.
+
+SGI IRIX:
+
+You need to edit the file ~/.xsession instead of ~/.xinitrc.
+
+SGI's version of XDM has a nice feature so that the window manager can
+still have a logout command, but you are not logged out if it
+crashes.  This is done by running the programs "reaper" and
+"endsession", as in this sample .xsession file:
+
+#! /bin/sh
+xsetroot -solid \#004040
+xrdb .Xresources
+reaper
+flwm -x &
+xwsh -console -t console -iconic &
+
+Also create the file "~/.wmx/Logout" with these contents:
+
+#! /bin/sh
+endsession
+
+The result will be that flwm has a menu itme "Logout" that logs you
+out.
+
+----------------------------------------------------------------
+Usage:
+----------------------------------------------------------------
+
+Type "man flwm" for the manual page.
+
+----------------------------------------------------------------
+Acknoledgements
+----------------------------------------------------------------
+
+This program was inspired by and much code copied from the "wm2"
+window manager by Chris Cannam <cannam@zands.demon.co.uk>
+
+Code contributions by Steve );Hara-Smith <steveo@iol.ie>
+
+----------------------------------------------------------------
+Copyright (C) 1998-1999 Bill Spitzak
+----------------------------------------------------------------
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at
+your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+USA.
+
+Written by Bill Spitzak		spitzak@d2.com
+----------------------------------------------------------------
+END
+----------------------------------------------------------------
