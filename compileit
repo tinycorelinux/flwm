@@ -2,7 +2,7 @@
 
 CXXFLAGS="$CXXFLAGS `fltk-config --cxxflags`"
 CXXFLAGS="$CXXFLAGS -Wall -ffunction-sections -fdata-sections -Wno-strict-aliasing"
-LDFLAGS="$LDFLAGS `fltk-config --ldflags --use-images`"
+LDFLAGS="$LDFLAGS `fltk-config --ldstaticflags --use-images`"
 LDFLAGS="$LDFLAGS -Wl,-gc-sections"
 
 echo Building flwm...
