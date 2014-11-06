@@ -1268,7 +1268,7 @@ void Frame::show_hide_buttons() {
   if (label_x != bx && shown())
 //ML Buttons look garbled after expanding, so let's just clear the whole area
     XClearArea(fl_display,fl_xid(this), LEFT, TOP, w() - LEFT, TITLE_HEIGHT, 1);
-  label_x = BUTTON_LEFT + BUTTON_W + left;
+  label_x = BUTTON_LEFT + left;
   label_w = bx - label_x;
 
 }
