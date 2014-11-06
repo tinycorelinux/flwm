@@ -1299,12 +1299,12 @@ void Frame::show_hide_buttons() {
   }
 #endif
   if (!transient_for()) {
-    iconize_button.position(BUTTON_LEFT,by);
-    iconize_button.show();
+    min_w_button.position(BUTTON_LEFT,by);
+    min_w_button.show();
     by += BUTTON_H;
   }
   else {
-    iconize_button.hide();
+    min_w_button.hide();
   }
   if (min_h == max_h || flag(KEEP_ASPECT|NO_RESIZE) ||
       !max_h_button.value() && by+label_w+2*BUTTON_H > h()-BUTTON_BOTTOM) {
@@ -1327,6 +1327,16 @@ void Frame::show_hide_buttons() {
 //ML Buttons look garbled after expanding, so let's just clear the whole area
     XClearArea(fl_display,fl_xid(this), 1, 1, left-1, h()-1, 1);
   label_y = by;
+
+  //ML MOVED ICONIZE BUTTON TO BOTTOM --
+  if (by+BUTTON_H > h()-BUTTON_BOTTOM || transient_for()) {
+    label_h = h()-BOTTOM-by;
+    iconize_button.hide();
+  } else {
+    iconize_button.show();
+    iconize_button.position(BUTTON_LEFT,h()-(BUTTON_BOTTOM+BUTTON_H));
+    label_h = iconize_button.y()-by;
+  }
 // -- END ML
 
 }
