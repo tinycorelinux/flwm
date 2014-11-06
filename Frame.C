@@ -1402,7 +1402,6 @@ void Frame::draw() {
       }
 	  // ------------------ML
 
-  if (!flag(THIN_BORDER)) Fl_Window::draw();
   if (damage() != FL_DAMAGE_CHILD) {
 
 #ifdef ACTIVE_COLOR
@@ -1421,6 +1420,7 @@ void Frame::draw() {
 		      Fl_Align(FL_ALIGN_LEFT|FL_ALIGN_CLIP), 0, 0);
     }
   }
+  if (!flag(THIN_BORDER)) Fl_Window::draw();
 }
 #else
 void Frame::draw() {
@@ -1437,7 +1437,6 @@ void Frame::draw() {
       }
 	  // ------------------ML
 
-  if (!flag(THIN_BORDER)) Fl_Window::draw();
   if (damage() != FL_DAMAGE_CHILD) {
 #ifdef ACTIVE_COLOR
     fl_frame2(active() ? "AAAAJJWW" : "AAAAJJWWNNTT",0,0,w(),h());
@@ -1480,6 +1479,7 @@ void Frame::draw() {
 		     Fl_Align(FL_ALIGN_TOP|FL_ALIGN_CLIP));
     }
   }
+  if (!flag(THIN_BORDER)) Fl_Window::draw();
 }
 #endif
 
