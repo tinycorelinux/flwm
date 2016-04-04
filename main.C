@@ -1,3 +1,9 @@
+// flwm: main.cpp
+//
+// CHANGES
+//   20160402: update XkbKeycodeToKeysym() to use XKBlib.h; some
+//     tests & blocks clarified (add parentheses); dentonlt
+//
 // Define "TEST" and it will compile to make a single fake window so
 // you can test the window controls.
 //#define TEST 1
@@ -6,6 +12,7 @@
 
 #include "Frame.H"
 #include <X11/Xproto.h>
+#include <X11/XKBlib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -76,9 +83,11 @@ extern void click_raise(Frame*);
 
 // fltk calls this for any events it does not understand:
 static int flwm_event_handler(int e) {
+
   if (Fl::event_key()==FL_Escape) {
     return 1;
   }
+
   if (!e) { // XEvent that fltk did not understand.
     XWindow window = fl_xevent->xany.window;
     // unfortunately most of the redirect events put the interesting
@@ -97,13 +106,17 @@ static int flwm_event_handler(int e) {
     case UnmapNotify:
       window = fl_xevent->xmaprequest.window;
     }
-    for (Frame* c = Frame::first; c; c = c->next)
-      if (c->window() == window || fl_xid(c) == window)
+
+    for (Frame* c = Frame::first; c; c = c->next) {
+      if (c->window() == window || fl_xid(c) == window) {
 #if CLICK_RAISES || CLICK_TO_TYPE
-	if (fl_xevent->type == ButtonPress) {click_raise(c); return 1;}
-	else
+	  if (fl_xevent->type == ButtonPress) {click_raise(c); return 1;}
+	  else
 #endif
-	  return c->handle(fl_xevent);
+      return c->handle(fl_xevent);
+      }
+    } // end for each child window
+
     switch (fl_xevent->type) {
     case ButtonPress:
       printf("got a button press in main\n");
@@ -122,10 +135,12 @@ static int flwm_event_handler(int e) {
     case KeyRelease:
       if (!Fl::grab()) return 0;
       Fl::e_keysym =
-	XKeycodeToKeysym(fl_display, fl_xevent->xkey.keycode, 0);
+	XkbKeycodeToKeysym(fl_display, fl_xevent->xkey.keycode, 0, 0);
       goto KEYUP;
-    }
-  } else if (e == FL_KEYUP) {
+    } // end switch(fl_xevent->type)
+
+  } // end if (!e)
+  else if (e == FL_KEYUP) {
   KEYUP:
     if (!Fl::grab()) return 0;
     // when alt key released, pretend they hit enter & pick menu item
