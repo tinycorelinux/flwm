@@ -546,7 +546,7 @@ ShowTabMenu(int tab)
       if (d == Desktop::current()) first_on_desk = menu+n;
       for (c = Frame::first; c; c = c->next) {
 	if (c->state() == UNMAPPED || c->transient_for()) continue;
-	if (c->desktop() == d || !c->desktop() && d == Desktop::current()) {
+	if ((c->desktop() == d) || (!c->desktop() && (d == Desktop::current()))) {
 	  init(menu[n],(char*)c);
 	  init(menu[n],(char*)c);
 	  menu[n].labeltype(FRAME_LABEL);

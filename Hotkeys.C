@@ -1,6 +1,8 @@
 // Hotkeys.C
-
 // If you want to change what the hotkeys are, see the table at the bottom!
+//
+// CHANGES
+//   20160402: clarify tests in Handle_Hotkey() (add parentheses); dentonlt
 
 #include "config.h"
 #include "Frame.H"
@@ -312,12 +314,11 @@ static struct {int key; void (*func)();} keybindings[] = {
 #endif
   {0}};
 
-
 int Handle_Hotkey() {
   for (int i = 0; keybindings[i].key; i++) {
-    if (Fl::test_shortcut(keybindings[i].key) ||
-	(keybindings[i].key & 0xFFFF) == FL_Delete
-	&& Fl::event_key() == FL_BackSpace// fltk bug?
+    if ( Fl::test_shortcut(keybindings[i].key) ||
+	  (((keybindings[i].key & 0xFFFF) == FL_Delete)
+	  && (Fl::event_key() == FL_BackSpace)) // fltk bug?
 	) {
       keybindings[i].func();
       return 1;

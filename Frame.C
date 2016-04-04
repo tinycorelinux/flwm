@@ -1,7 +1,9 @@
 // Frame.C
-// Some modifications by Michael A. Losh, tagged "ML" below,
+//
+// CHANGES
+// 20090927: Some modifications by Michael A. Losh, tagged "ML" below,
 //   or bracketed by TOPSIDE manifest constant
-// Last update: 2009-09-27
+// 20160402: some tests clarified (more parentheses ...); dentonlt
 
 #define FL_INTERNALS 1
 
@@ -13,7 +15,6 @@
 #include <stdlib.h>
 #include <FL/fl_draw.H>
 #include "Rotated.H"
-
 
 static Atom wm_state = 0;
 static Atom wm_change_state;
@@ -103,7 +104,7 @@ Frame::Frame(XWindow window, XWindowAttributes* existing) :
   if (titlebar_color_str) {
 	  fields = sscanf(titlebar_color_str, "%02X:%02X:%02X", &r, &g, &b);
   }
-  if (titlebar_color_str && fields == 3) {
+  if (titlebar_color_str && (fields == 3)) {
 	  Fl::set_color(FL_BACKGROUND2_COLOR, r, g, b);
   }
   else {
@@ -182,7 +183,7 @@ Frame::Frame(XWindow window, XWindowAttributes* existing) :
     state_ = ICONIC; break;
   // X also defines obsolete values ZoomState and InactiveState
   default:
-    if (hints && (hints->flags&StateHint) && hints->initial_state==IconicState)
+    if ((hints && (hints->flags&StateHint)) && (hints->initial_state==IconicState))
       state_ = ICONIC;
     else
       state_ = NORMAL;
@@ -228,12 +229,12 @@ Frame::Frame(XWindow window, XWindowAttributes* existing) :
     // get the desktop from either Gnome or KDE (Gnome takes precedence):
     p = getIntProperty(_win_workspace, XA_CARDINAL, -1) + 1; // Gnome desktop
     if (p <= 0) p = getIntProperty(kwm_win_desktop, kwm_win_desktop);
-    if (p > 0 && p < 25)
+    if ((p > 0) && (p < 25))
       desktop_ = Desktop::number(p, 1);
     else
       desktop_ = Desktop::current();
   }
-  if (desktop_ && desktop_ != Desktop::current())
+  if (desktop_ && (desktop_ != Desktop::current()))
     if (state_ == NORMAL) state_ = OTHER_DESKTOP;
 #endif
 
@@ -967,7 +968,7 @@ void Frame::raise() {
   // preserving stacking order:
   for (p = &first; *p;) {
     Frame* f = *p;
-    if (f == this || f->is_transient_for(this) && f->state() != UNMAPPED) {
+    if ((f == this) || (f->is_transient_for(this) && (f->state() != UNMAPPED))) {
       *p = f->next; // remove it from list
       if (previous) {
 	XWindowChanges w;
@@ -1022,7 +1023,7 @@ void Frame::lower() {
 
 void Frame::iconize() {
   for (Frame* c = first; c; c = c->next) {
-    if (c == this || c->is_transient_for(this) && c->state() != UNMAPPED)
+    if ((c == this) || (c->is_transient_for(this) && (c->state() != UNMAPPED)))
       c->state(ICONIC);
   }
 }
@@ -1306,16 +1307,16 @@ void Frame::show_hide_buttons() {
   else {
     min_w_button.hide();
   }
-  if (min_h == max_h || flag(KEEP_ASPECT|NO_RESIZE) ||
-      !max_h_button.value() && by+label_w+2*BUTTON_H > h()-BUTTON_BOTTOM) {
+  if ((min_h == max_h) || flag(KEEP_ASPECT|NO_RESIZE) ||
+      (!max_h_button.value() && ((by+label_w+2*BUTTON_H) > (h()-BUTTON_BOTTOM)))) {
     max_h_button.hide();
   } else {
     max_h_button.position(BUTTON_LEFT,by);
     max_h_button.show();
     by += BUTTON_H;
   }
-  if (min_w == max_w || flag(KEEP_ASPECT|NO_RESIZE) ||
-      !max_w_button.value() && by+label_w+2*BUTTON_H > h()-BUTTON_BOTTOM) {
+  if ((min_w == max_w) || flag(KEEP_ASPECT|NO_RESIZE) ||
+      (!max_w_button.value() && ((by+label_w+2*BUTTON_H > h()-BUTTON_BOTTOM)))) {
     max_w_button.hide();
   } else {
     max_w_button.position(BUTTON_LEFT,by);
@@ -1825,9 +1826,9 @@ int Frame::handle(int e) {
 	nh = iy+ih-(Fl::event_y_root()-dy);
       else {ny = y(); nh = h();}
       if (flag(KEEP_ASPECT)) {
-	if (nw-dwidth > nh-dwidth
-	    && (what&(FL_ALIGN_LEFT|FL_ALIGN_RIGHT))
-	    || !(what&(FL_ALIGN_TOP|FL_ALIGN_BOTTOM)))
+	if ((nw-dwidth > nh-dwidth)
+	    && (what&(FL_ALIGN_LEFT|FL_ALIGN_RIGHT)
+	    || !(what&(FL_ALIGN_TOP|FL_ALIGN_BOTTOM))))
 	  nh = nw-dwidth+dheight;
 	else
 	  nw = nh-dheight+dwidth;
