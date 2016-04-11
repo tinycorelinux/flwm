@@ -463,11 +463,6 @@ int Frame::force_y_onscreen(int Y, int H) {
 // The destructor is called on DestroyNotify, so I don't have to do anything
 // to the contained window, which is already been destroyed.
 
-// fltk bug: it does not clear these pointers when window is deleted,
-// causing flwm to crash on window close sometimes:
-extern Fl_Window *fl_xfocus;
-extern Fl_Window *fl_xmousewin;
-
 Frame::~Frame() {
 
   // It is possible for the frame to be destroyed while the menu is
@@ -477,11 +472,6 @@ Frame::~Frame() {
   // be reliable unless something reallocates the memory and writes
   // a legal state value to this location:
   state_ = UNMAPPED;
-
-  // fix fltk bug:
-  fl_xfocus = 0;
-  fl_xmousewin = 0;
-  Fl::focus_ = 0;
 
   // remove any pointers to this:
   Frame** cp; for (cp = &first; *cp; cp = &((*cp)->next))
