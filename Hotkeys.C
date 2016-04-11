@@ -3,6 +3,10 @@
 //
 // CHANGES
 //   20160402: clarify tests in Handle_Hotkey() (add parentheses); dentonlt
+//   20160410: add FL_META for PreviousDesk/NextDesk, reverse desktop
+//     browse order - newer desktops are 'next'; dentonlt
+//   20160411: GrowFrame(): stay below y = 0, add anchor top left,
+//     grow at any size; dentonlt
 
 #include "config.h"
 #include "Frame.H"
@@ -24,9 +28,9 @@ static void PreviousWindow() { // Alt+Shift+Tab
 
 #endif
 
-#if DESKTOPS && WMX_DESK_HOTKEYS
+#if DESKTOPS && ( WMX_DESK_HOTKEYS || WMX_DESK_METAKEYS )
 
-static void NextDesk() {
+static void PreviousDesk() {
   if (Desktop::current()) {
     Desktop::current(Desktop::current()->next?
 		     Desktop::current()->next:Desktop::first);
@@ -35,7 +39,7 @@ static void NextDesk() {
   }
 }
 
-static void PreviousDesk() {
+static void NextDesk() {
   Desktop* search=Desktop::first;
   while (search->next && search->next!=Desktop::current()){
     search=search->next;
@@ -130,23 +134,34 @@ static void GrowFrame(int wbump, int hbump) {
 	  ny = f->y();
 	  nw = f->w();
 	  nh = f->h();
-	  if (wbump != 0 && f->w() >= minw) {
+
+	  if (wbump) {
+		  // grow & clip
 		  nw +=  wbump * 32;
 		  if (nw < minw) nw = minw;
 		  if (nw > Fl::w()) nw = Fl::w();
+
+		  // reposition if off-screen
 		  if (nx + nw > Fl::w())
 			nx = Fl::w() - nw;
 	  }
 
-	  if (hbump != 0 && f->h() >= minh) {
+	  if (hbump) {
+          // grow & clip
 		  nh += hbump * 32;
-		  if (nh < minh) nh = minh;
+	      if (nh < minh) nh = minh;
 		  if (nh > Fl::h()) nh = Fl::h();
-		  ny = f->y();
+
+#ifndef RESIZE_ANCHOR_TOPLEFT
+          // grow with bottom left corner anchored
+		  if (nh != f->h())
+            ny = f->y() - hbump * 32;
+#endif
+
+		  // reposition if off-screen
+		  if (ny < 0) ny = 0;
 		  if (ny + nh > Fl::h())
-			ny = Fl::h() - nh;
-		  else
-		    ny = f->y() + f->h() - nh;
+		    ny = Fl::h() - nh;
 	  }
 
 	  f->set_size(nx, ny, nw, nh);
@@ -263,6 +278,9 @@ static struct {int key; void (*func)();} keybindings[] = {
   // these wmx keys are not set by default as they break NetScape:
   {FL_ALT+FL_Left,	PreviousDesk},
   {FL_ALT+FL_Right,	NextDesk},
+#elif WMX_DESK_METAKEYS && DESKTOPS
+  {FL_META+FL_Left,	PreviousDesk},
+  {FL_META+FL_Right,	NextDesk},
 #endif
 #if CDE_HOTKEYS
   // CDE hotkeys (or at least what SGI's 4DWM uses):

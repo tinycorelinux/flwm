@@ -1,6 +1,13 @@
-// config.h
-// You can edit these symbols to change the behavior & appearance of flwm.
-// Turning off features will make flwm smaller too!
+/* flwm - config.h
+
+   You can edit these symbols to change the behavior & appearance of flwm.
+   Turning off features will make flwm smaller too!
+
+   CHANGES
+     20160410 - add WMX_DESK_METAKEYS as altenative to WMX_DESK_HOTKEYS;
+       dentonlt
+	 20160411 - add RESIZE_ANCHOR_TOPLEFT; dentonlt
+*/
 
 //ML Start---
 
@@ -63,6 +70,12 @@
 // big enough to show the window title:
 #define MINIMIZE_HEIGHT 1
 
+// When using keystrokes to adjusting window width, flwm extends the
+// window on its right side. By default, vertical changes stretch the
+// window top (bottom left corner of window is anchored). To make flwm
+// stretch downward instead (anchor top left corner), set this value:
+// #define RESIZE_ANCHOR_TOPLEFT 1
+
 // Read links from ~/.wmx to make menu items to run programs:
 #define WMX_MENU_ITEMS 1
 
@@ -74,7 +87,12 @@
 #define KWM_HOTKEYS 1	// ctrl+tab and ctrl+Fn for desktop switching
 #define CDE_HOTKEYS defined(__sgi) // alt+fn do actions like raise/lower/close
 #define WMX_HOTKEYS 1	// alt+up/down/enter/delete
+
+// enable one of these two for prev/next desktop switching. If both are
+// set true here, only WMX_DESK_HOTKEYS will be implemented.
 #define WMX_DESK_HOTKEYS 0 // alt+left/right (conflict with Netscape)
+#define WMX_DESK_METAKEYS 0 // meta+left/right for prev/next desktop
+
 #define DESKTOP_HOTKEYS 0 // alt+fn goes to desktop n
 
 ////////////////////////////////////////////////////////////////
