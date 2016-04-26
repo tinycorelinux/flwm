@@ -1,14 +1,17 @@
 #!/bin/sh -e
 
+if [ "$(fltk-config --ldflags | grep Xft)" ]; then
+  CPPFLAGS="-DHAVE_XFT"
+fi
 CXXFLAGS="$CXXFLAGS `fltk-config --cxxflags`"
 CXXFLAGS="$CXXFLAGS -Wall -ffunction-sections -fdata-sections -Wno-strict-aliasing"
-LDFLAGS="$LDFLAGS `fltk-config --ldstaticflags --use-images`"
+LDFLAGS="$LDFLAGS `fltk-config --ldflags --use-images`"
 LDFLAGS="$LDFLAGS -Wl,-gc-sections"
 
 echo Building flwm...
-g++ -o flwm *.C $CXXFLAGS $LDFLAGS
+g++ -o flwm *.C $CXXFLAGS $LDFLAGS $CPPFLAGS
 sstrip flwm
 
 echo Building flwm_topside...
-g++ -o flwm_topside -DTOPSIDE *.C $CXXFLAGS $LDFLAGS
+g++ -o flwm_topside -DTOPSIDE *.C $CXXFLAGS $LDFLAGS $CPPFLAGS
 sstrip flwm_topside

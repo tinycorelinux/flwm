@@ -361,10 +361,10 @@ static void setrotfont(int angle) {
   /* get nearest vertical or horizontal direction ... */
   int dir = ((angle+45)/90)%4;
   if (font) {
-    if (font->xfontstruct == fl_xfont && font->dir == dir) return;
+    if ((font->xfontstruct == fl_X_core_font()) && (font->dir == dir)) return;
     XRotUnloadFont(fl_display, font);
   }
-  font = XRotLoadFont(fl_display, fl_xfont, dir);
+  font = XRotLoadFont(fl_display, fl_X_core_font(), dir);
 }
 
 void draw_rotated(const char* text, int n, int x, int y, int angle) {
