@@ -7,6 +7,7 @@
      20160410 - add WMX_DESK_METAKEYS as altenative to WMX_DESK_HOTKEYS;
        dentonlt
 	 20160411 - add RESIZE_ANCHOR_TOPLEFT; dentonlt
+	 20160506 - add EXTENDED_MOVEMENT_KEYS; dentonlt
 */
 
 //ML Start---
@@ -87,6 +88,10 @@
 #define KWM_HOTKEYS 1	// ctrl+tab and ctrl+Fn for desktop switching
 #define CDE_HOTKEYS defined(__sgi) // alt+fn do actions like raise/lower/close
 #define WMX_HOTKEYS 1	// alt+up/down/enter/delete
+
+// Extended Movement Keys: press ctrl+alt+shift+[arrow/enter] to send
+// window to max left/right/up/down or center
+// #define EXTENDED_MOVEMENT_KEYS 1
 
 // enable one of these two for prev/next desktop switching. If both are
 // set true here, only WMX_DESK_HOTKEYS will be implemented.

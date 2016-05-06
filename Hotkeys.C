@@ -7,6 +7,7 @@
 //     browse order - newer desktops are 'next'; dentonlt
 //   20160411: GrowFrame(): stay below y = 0, add anchor top left,
 //     grow at any size; dentonlt
+//   20160506: Add EXTENDED_MOVEMENT_KEYS; dentonlt
 
 #include "config.h"
 #include "Frame.H"
@@ -124,6 +125,35 @@ static void MoveRight(void) { // Ctrl+Alt+Right
 static void MoveDown(void) { // Ctrl+Alt+Down
 	MoveFrame(0, +1);
 }
+
+#ifdef EXTENDED_MOVEMENT_KEYS
+static void MoveMaxLeft(void) {
+  Frame* f = Frame::activeFrame();
+  f->set_size(0, f->y(), f->w(), f->h());
+}
+
+static void MoveMaxRight(void) {
+  Frame* f = Frame::activeFrame();
+  f->set_size(Fl::w() - f->w(), f->y(), f->w(), f->h());
+}
+
+static void MoveMaxUp(void) {
+  Frame* f = Frame::activeFrame();
+  f->set_size(f->x(), 0, f->w(), f->h());
+}
+
+static void MoveMaxDown(void) {
+  Frame* f = Frame::activeFrame();
+  f->set_size(f->x(), Fl::h() - f->h(), f->w(), f->h());
+}
+
+static void MoveCenter(void) {
+  Frame* f = Frame::activeFrame();
+  f->set_size(Fl::w()/2 - f->w()/2, Fl::h()/2 - f->h()/2, f->w(), f->h());
+}
+
+#endif
+
 static void GrowFrame(int wbump, int hbump) {
   int nx, ny, nw, nh;
   Frame* f = Frame::activeFrame();
@@ -329,6 +359,13 @@ static struct {int key; void (*func)();} keybindings[] = {
   {FL_CTRL+FL_ALT+'v',	ToggleVertMax},
   {FL_CTRL+FL_ALT+'h',	ToggleHorzMax},
   {FL_CTRL+FL_ALT+'m',	ToggleWinMax},
+#endif
+#ifdef EXTENDED_MOVEMENT_KEYS
+  {FL_CTRL+FL_ALT+FL_SHIFT+FL_Left,		MoveMaxLeft},
+  {FL_CTRL+FL_ALT+FL_SHIFT+FL_Up,		MoveMaxUp},
+  {FL_CTRL+FL_ALT+FL_SHIFT+FL_Right,	MoveMaxRight},
+  {FL_CTRL+FL_ALT+FL_SHIFT+FL_Down,		MoveMaxDown},
+  {FL_CTRL+FL_ALT+FL_SHIFT+FL_Enter,	MoveCenter},
 #endif
   {0}};
 
