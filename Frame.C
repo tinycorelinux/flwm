@@ -1050,6 +1050,9 @@ void Frame::desktop(Desktop* d) {
 // the contents.  This also sets the buttons on/off as needed:
 
 void Frame::set_size(int nx, int ny, int nw, int nh, int warp) {
+#ifdef TOPSIDE
+  int dw = nw-w();
+#endif
   int dx = nx-x(); x(nx);
   int dy = ny-y(); y(ny);
   if (!dx && !dy && nw == w() && nh == h()) return;
@@ -1103,7 +1106,11 @@ void Frame::set_size(int nx, int ny, int nw, int nh, int warp) {
   }
   // for maximize button move the cursor first if window gets smaller
   if (warp == 1 && (dx || dy))
+#ifdef TOPSIDE
+    XWarpPointer(fl_display, None,None,0,0,0,0, dw+dx, dy);
+#else
     XWarpPointer(fl_display, None,None,0,0,0,0, dx, dy);
+#endif
   // for configure request, move the cursor first
   if (warp == 2 && active() && !Fl::pushed()) warp_pointer();
   XMoveResizeWindow(fl_display, fl_xid(this), nx, ny, nw, nh);
@@ -1125,7 +1132,11 @@ void Frame::set_size(int nx, int ny, int nw, int nh, int warp) {
   }
   // for maximize button move the cursor second if window gets bigger:
   if (warp == 3 && (dx || dy))
+#ifdef TOPSIDE
+    XWarpPointer(fl_display, None,None,0,0,0,0, dw+dx, dy);
+#else
     XWarpPointer(fl_display, None,None,0,0,0,0, dx, dy);
+#endif
   if (nw > dwidth) sendConfigureNotify();
   XSync(fl_display,0);
 }
