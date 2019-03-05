@@ -3,6 +3,8 @@
 // CHANGES
 //   20160402: update XkbKeycodeToKeysym() to use XKBlib.h; some
 //     tests & blocks clarified (add parentheses); dentonlt
+//   20190303: Added DoNotWarp variable.
+//             Added program_version define. Rich
 //
 // Define "TEST" and it will compile to make a single fake window so
 // you can test the window controls.
@@ -32,10 +34,13 @@
 static const char* program_name;
 static int initializing;
 
+#define program_version "Version 1.20"
+int DoNotWarp=0;	// Used to override mouse pointer warping if environmental variable NOWARP exists.
+
 static int xerror_handler(Display* d, XErrorEvent* e) {
   if (initializing && (e->request_code == X_ChangeWindowAttributes) &&
       e->error_code == BadAccess)
-    Fl::fatal("Another window manager is running.  You must exit it before running %s.", program_name);
+    Fl::fatal("Another window manager is running.  You must exit it before running %s %s.", program_name, program_version);
 #ifndef DEBUG
   if (e->error_code == BadWindow) return 0;
   if (e->error_code == BadColor) return 0;
@@ -396,6 +401,7 @@ static void color_setup(Fl_Color slot, const char* arg, ulong value) {
 int main(int argc, char** argv) {
   program_name = fl_filename_name(argv[0]);
   int i; if (Fl::args(argc, argv, i, arg) < argc) Fl::error(
+"%s\n\n"
 "options are:\n"
 " -d[isplay] host:#.#\tX display & screen to use\n"
 " -v[isual] #\t\tvisual to use\n"
@@ -407,8 +413,12 @@ int main(int argc, char** argv) {
 " -bg2 color\t\tText field color\n"
 " -c[ursor] #\t\tCursor number for root\n"
 " -cfg color\t\tCursor color\n"
-" -cbg color\t\tCursor outline color"
+" -cbg color\t\tCursor outline color", program_version
 );
+
+	if(getenv("NOWARP"))	// If environmental variable NOWARP exists (value does not matter)
+		DoNotWarp=1;		// Then keep your hands off of my mouse pointer.
+
 #ifndef FL_NORMAL_SIZE // detect new versions of fltk where this is a variable
   FL_NORMAL_SIZE = 12;
 #endif

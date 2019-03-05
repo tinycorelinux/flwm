@@ -1,12 +1,41 @@
 #!/bin/sh -e
 
+PROCESSOR_TYPE=`uname -m`
+echo "$PROCESSOR_TYPE detected."
+
+case "$PROCESSOR_TYPE" in
+	i686)
+	CXXFLAGS="-flto -fuse-linker-plugin -march=i486 -mtune=i686 -Os -pipe -fno-exceptions -fno-rtti"
+	LDFLAGS="-Wl,-O1"
+	;;
+
+	x86_64)
+	CXXFLAGS="-flto -fuse-linker-plugin -mtune=generic -Os -pipe -fno-exceptions -fno-rtti"
+	LDFLAGS="-Wl,-O1"
+	;;
+
+	armv*)
+	CXXFLAGS="-march=armv6zk -mtune=arm1176jzf-s -mfpu=vfp -Os -pipe -fno-exceptions -fno-rtti"
+	LDFLAGS="-Wl,-O1"
+	;;
+
+	*)
+	echo "$PROCESSOR_TYPE: Unknown processor type. CXXFLAGS and LDFLAGS may need to be adjusted."
+	;;
+esac
+
 if [ "$(fltk-config --ldflags | grep Xft)" ]; then
   CPPFLAGS="-DHAVE_XFT"
 fi
+
 CXXFLAGS="$CXXFLAGS `fltk-config --cxxflags`"
 CXXFLAGS="$CXXFLAGS -Wall -ffunction-sections -fdata-sections -Wno-strict-aliasing"
 LDFLAGS="$LDFLAGS `fltk-config --ldflags --use-images`"
 LDFLAGS="$LDFLAGS -Wl,-gc-sections"
+
+echo -e "\nCXXFLAGS=$CXXFLAGS\n"
+echo -e "LDFLAGS=$LDFLAGS\n"
+echo -e "CPPFLAGS=$CPPFLAGS\n"
 
 echo Building flwm...
 g++ -o flwm *.C $CXXFLAGS $LDFLAGS $CPPFLAGS

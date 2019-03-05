@@ -8,6 +8,7 @@
 //   20160411: GrowFrame(): stay below y = 0, add anchor top left,
 //     grow at any size; dentonlt
 //   20160506: Add EXTENDED_MOVEMENT_KEYS; dentonlt
+//   20190303: Made ToggleWinMax public for use in Frame.C. Rich
 
 #include "config.h"
 #include "Frame.H"
@@ -16,6 +17,8 @@
 
 extern void ShowMenu();
 extern void ShowTabMenu(int tab);
+
+void ToggleWinMax(void);
 
 #if STANDARD_HOTKEYS
 
@@ -252,7 +255,7 @@ static void ToggleHorzMax(void) {// Ctrl+Alt+H
 	}
 }
 
-static void ToggleWinMax(void) {// Ctrl+Alt+M
+void ToggleWinMax(void) {// Ctrl+Alt+M
 	Frame* f = Frame::activeFrame();
 	int is_hmax = -1;
 	int is_vmax = -1;

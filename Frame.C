@@ -4,6 +4,9 @@
 // 20090927: Some modifications by Michael A. Losh, tagged "ML" below,
 //   or bracketed by TOPSIDE manifest constant
 // 20160402: some tests clarified (more parentheses ...); dentonlt
+// 20190303: Added: DoNotWarp variable to overide mouse cursor warping if desired.
+//           Added: Double click titlebar to toggle window max size and normal size.
+//           Compiler Warnings: Moved break statements to their own lines. Rich
 
 #define FL_INTERNALS 1
 
@@ -18,6 +21,9 @@
 #ifndef HAVE_XFT
 #include "Rotated.H" // text rotation code; not supported by non-Xft FLTK 1.3.x
 #endif
+
+// From Hotkeys.C
+extern void ToggleWinMax(void);
 
 static Atom wm_state = 0;
 static Atom wm_change_state;
@@ -46,6 +52,9 @@ extern Atom _win_workspace;
 extern char clock_buf[];
 extern int clock_alarm_on;
 #endif
+
+// Set by main in main.C:
+extern int DoNotWarp;	// Used to override mouse pointer warping if environmental variable NOWARP exists.
 
 static const int XEventMask =
 ExposureMask|StructureNotifyMask
@@ -813,7 +822,7 @@ int Frame::activate(int warp) {
   // unless you know the pointer is already in the window):
   if (!warp || Fl::event_state() & (FL_BUTTON1|FL_BUTTON2|FL_BUTTON3)) {
     ;
-  } else if (warp==2) {
+  } else if (warp==2 && !DoNotWarp) {
     // warp to point at title:
 #ifdef TOPSIDE
     XWarpPointer(fl_display, None, fl_xid(this), 0,0,0,0, left/2+1,
@@ -1102,7 +1111,7 @@ void Frame::set_size(int nx, int ny, int nw, int nh, int warp) {
 //ML      XClearArea(fl_display,fl_xid(this), 1, t, left-1, nh-t, 1);
   }
   // for maximize button move the cursor first if window gets smaller
-  if (warp == 1 && (dx || dy))
+  if (warp == 1 && !DoNotWarp && (dx || dy))
     XWarpPointer(fl_display, None,None,0,0,0,0, dx, dy);
   // for configure request, move the cursor first
   if (warp == 2 && active() && !Fl::pushed()) warp_pointer();
@@ -1124,7 +1133,7 @@ void Frame::set_size(int nx, int ny, int nw, int nh, int warp) {
     }
   }
   // for maximize button move the cursor second if window gets bigger:
-  if (warp == 3 && (dx || dy))
+  if (warp == 3 && !DoNotWarp && (dx || dy))
     XWarpPointer(fl_display, None,None,0,0,0,0, dx, dy);
   if (nw > dwidth) sendConfigureNotify();
   XSync(fl_display,0);
@@ -1147,6 +1156,7 @@ void Frame::sendConfigureNotify() const {
 
 // move the pointer inside the window:
 void Frame::warp_pointer() {
+	if(DoNotWarp) return;
   int X,Y; Fl::get_mouse(X,Y);
   X -= x();
   int Xi = X;
@@ -1752,6 +1762,14 @@ int Frame::handle(int e) {
     return 1;
 
   case FL_PUSH:
+	// See if user double clicked on titlebar (or window frame).
+	if(!cursor_inside && (Fl::event_button() == 1) && Fl::event_clicks())
+	{
+		set_cursor(-1);
+		ToggleWinMax();	// Toggles window size between normal and maximized.
+		return 1;
+	}
+
     if (Fl::event_button() > 2) {
       set_cursor(-1);
       ShowMenu();
@@ -1957,9 +1975,11 @@ int Frame::handle(const XEvent* ei) {
       // checking for it being different...
       switch (getIntProperty(wm_state, wm_state, state())) {
       case IconicState:
-	if (state() == NORMAL || state() == OTHER_DESKTOP) iconize(); break;
+	if (state() == NORMAL || state() == OTHER_DESKTOP) iconize();
+	break;
       case NormalState:
-	if (state() != NORMAL && state() != OTHER_DESKTOP) raise(); break;
+	if (state() != NORMAL && state() != OTHER_DESKTOP) raise();
+	break;
       }
 
     } else if (a == wm_colormap_windows) {
