@@ -118,7 +118,7 @@
 
 // font for titles (if not set, helvetica bold is used):
 // If this name is specific enough the font size is ignored.
-// #define TITLE_FONT "-*-helvetica-medium-r-normal--*"
+#define TITLE_FONT "-*-helvetica-medium-r-normal--*"
 #define TITLE_FONT_SIZE 12
 
 // thickness of title bar (frame border thickness is added to it):
