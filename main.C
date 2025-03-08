@@ -34,7 +34,7 @@
 static const char* program_name;
 static int initializing;
 
-#define program_version "Version 1.20"
+#define program_version "Version 1.21"
 int DoNotWarp=0;	// Used to override mouse pointer warping if environmental variable NOWARP exists.
 
 static int xerror_handler(Display* d, XErrorEvent* e) {

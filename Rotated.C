@@ -355,22 +355,9 @@ static int XRotTextWidth(XRotFontStruct *rotfont, const char *str, int len)
 
 static XRotFontStruct* font;
 
-static void setrotfont(int angle) {
-  /* make angle positive ... */
-  if (angle < 0) do angle += 360; while (angle < 0);
-  /* get nearest vertical or horizontal direction ... */
-  int dir = ((angle+45)/90)%4;
-  if (font) {
-    if ((font->xfontstruct == fl_X_core_font()) && (font->dir == dir)) return;
-    XRotUnloadFont(fl_display, font);
-  }
-  font = XRotLoadFont(fl_display, fl_X_core_font(), dir);
-}
-
 void draw_rotated(const char* text, int n, int x, int y, int angle) {
   if (!text || !*text) return;
-  setrotfont(angle);
-  XRotDrawString(fl_display, font, fl_window, fl_gc, x, y, text, n);
+  fl_draw(angle, text, strlen(text), x, y);
 }
 
 #if !defined(FLWM) || FL_MAJOR_VERSION>=2
