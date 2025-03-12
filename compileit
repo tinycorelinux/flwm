@@ -19,6 +19,11 @@ case "$PROCESSOR_TYPE" in
 	LDFLAGS="-Wl,-O1"
 	;;
 
+        aarch64)                                                                                 
+        CXXFLAGS="-march=armv8-a+crc -mtune=cortex-a72 -Os -pipe -fno-exceptions -fno-rtti"
+        LDFLAGS="-Wl,-O1"                                                                          
+        ;;
+
 	*)
 	echo "$PROCESSOR_TYPE: Unknown processor type. CXXFLAGS and LDFLAGS may need to be adjusted."
 	;;
