@@ -36,10 +36,10 @@
 #include <string.h>
 #include <stdio.h>
 
-// If the FLTK version is 1.3.0 or higher FLTK's native rotated
+// If the FLTK version is 1.4.0 or higher FLTK's native rotated
 // text drawing can be used rather than "doing it manually"
 
-#if defined(FL_API_VERSION) && (FL_API_VERSION >= 10300)
+#if defined(FL_API_VERSION) && (FL_API_VERSION >= 10400)
 #define FLTK_ROTATED_TEXT 1
 #else
 #define FLTK_ROTATED_TEXT 0
