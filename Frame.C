@@ -17,6 +17,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <FL/fl_draw.H>
+#if FL_API_VERSION >= 10400
+#  if FLTK_USE_CAIRO
+  #include <cairo/cairo-xlib.h>
+#  endif
+#endif
 
 #ifndef HAVE_XFT
 #include "Rotated.H" // text rotation code; not supported by non-Xft FLTK 1.3.x
@@ -1116,6 +1121,12 @@ void Frame::set_size(int nx, int ny, int nw, int nh, int warp) {
   // for configure request, move the cursor first
   if (warp == 2 && active() && !Fl::pushed()) warp_pointer();
   XMoveResizeWindow(fl_display, fl_xid(this), nx, ny, nw, nh);
+#if FL_API_VERSION >= 10400
+#  if FLTK_USE_CAIRO
+  make_current();
+  if (fl_cairo_gc()) cairo_xlib_surface_set_size(cairo_get_target(fl_cairo_gc()), nw, nh);
+#  endif
+#endif
   if (nw <= dwidth) {
     if (unmap) {
       set_state_flag(IGNORE_UNMAP);

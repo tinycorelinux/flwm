@@ -36,6 +36,17 @@
 #include <string.h>
 #include <stdio.h>
 
+// If the FLTK version is 1.3.0 or higher FLTK's native rotated
+// text drawing can be used rather than "doing it manually"
+
+#if defined(FL_API_VERSION) && (FL_API_VERSION >= 10300)
+#define FLTK_ROTATED_TEXT 1
+#else
+#define FLTK_ROTATED_TEXT 0
+#endif
+
+#if (!FLTK_ROTATED_TEXT)
+
 struct BitmapStruct {
   int			 bit_w;
   int			 bit_h;
@@ -328,6 +339,9 @@ XRotDrawString(Display *dpy, XRotFontStruct *rotfont, Drawable drawable,
   XSetFillStyle(dpy, gc, FillSolid);
 }
 
+#endif // (!FLTK_ROTATED_TEXT)
+
+
 #ifndef FLWM
 /* *** Return the width of a string *** */
 
@@ -353,6 +367,8 @@ static int XRotTextWidth(XRotFontStruct *rotfont, const char *str, int len)
 
 // the public functions use the fltk global variables for font & gc:
 
+#if (!FLTK_ROTATED_TEXT)
+
 static XRotFontStruct* font;
 
 static void setrotfont(int angle) {
@@ -373,7 +389,17 @@ void draw_rotated(const char* text, int n, int x, int y, int angle) {
   XRotDrawString(fl_display, font, fl_window, fl_gc, x, y, text, n);
 }
 
-#if !defined(FLWM) || FL_MAJOR_VERSION>=2
+#endif // (!FLTK_ROTATED_TEXT)
+
+#if (FLTK_ROTATED_TEXT)
+
+void draw_rotated(const char* text, int x, int y, int angle) {
+  if (!text || !*text) return;
+  fl_draw(angle, text, strlen(text), x, y);
+}
+
+#elif !defined(FLWM) || FL_MAJOR_VERSION>=2
+
 void draw_rotated(const char* text, int x, int y, int angle) {
   if (!text || !*text) return;
   draw_rotated(text, strlen(text), x, y, angle);
