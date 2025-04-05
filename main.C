@@ -28,13 +28,22 @@
 //ML
 #include <FL/fl_ask.H>
 #include <signal.h>
+int TitleFontSz = TITLE_FONT_SIZE;
+int TitleSz  = TITLE_FONT_SIZE + 4;
+int ButtonSz = TitleSz;
+int LftSz = LEFT;
+int RgtSz = RIGHT;
+int TopSz = TOP;
+int BtmSz = BOTTOM;
+float sf = 1.0;
+
 
 ////////////////////////////////////////////////////////////////
 
 static const char* program_name;
 static int initializing;
 
-#define program_version "Version 1.20"
+#define program_version "Version 2.00"
 int DoNotWarp=0;	// Used to override mouse pointer warping if environmental variable NOWARP exists.
 
 static int xerror_handler(Display* d, XErrorEvent* e) {
@@ -420,9 +429,22 @@ int main(int argc, char** argv) {
 		DoNotWarp=1;		// Then keep your hands off of my mouse pointer.
 
 #ifndef FL_NORMAL_SIZE // detect new versions of fltk where this is a variable
-  FL_NORMAL_SIZE = 12;
+  FL_NORMAL_SIZE = 14;
 #endif
+
   fl_open_display();
+  sf = Fl::screen_scale(0);
+  TitleFontSz = (int) ((float)TITLE_FONT_SIZE * sf);
+  TitleSz     = (int) ((float)(TITLE_FONT_SIZE + 4) * sf);
+  if ((TitleSz % 2) == 0)  TitleSz++; // make odd!
+  ButtonSz    = TitleSz;
+  LftSz = (int) ((float)LEFT   * sf);
+  RgtSz = (int) ((float)RIGHT  * sf);
+  TopSz = (int) ((float)TOP    * sf);
+  BtmSz = (int) ((float)BOTTOM * sf);
+
+  for (int i = 0; i < Fl::screen_count(); i++) Fl::screen_scale(i, 1.0);
+
   color_setup(CURSOR_FG_SLOT, cfg, CURSOR_FG_COLOR<<8);
   color_setup(CURSOR_BG_SLOT, cbg, CURSOR_BG_COLOR<<8);
   Fl::set_color(FL_SELECTION_COLOR,0,0,128);

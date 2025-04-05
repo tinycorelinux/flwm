@@ -88,7 +88,7 @@ frame_label_draw(const Fl_Label* o, int X, int Y, int W, int H, Fl_Align align)
 	fl_rectf(X+x+SCREEN_DX, Y+y+SCREEN_DX, w, h);
     }
   }
-  fl_font(o->font, o->size);
+  fl_font(o->font, TitleFontSz); // o->size);
   fl_color((Fl_Color)o->color);
   const char* l = f->label(); if (!l) l = "unnamed";
   // double any ampersands to turn off the underscores:
@@ -111,7 +111,7 @@ frame_label_measure(const Fl_Label* o, int& W, int& H)
   Frame* f = (Frame*)(o->value);
   if (window_deleted(f)) {W = MENU_ICON_W+3; H = MENU_ICON_H; return;}
   const char* l = f->label(); if (!l) l = "unnamed";
-  fl_font(o->font, o->size);
+  fl_font(o->font, TitleFontSz); // o->size);
   fl_measure(l, W, H);
   W += MENU_ICON_W+3;
   if (W > MAX_MENU_WIDTH) W = MAX_MENU_WIDTH;
@@ -124,7 +124,7 @@ frame_label_measure(const Fl_Label* o, int& W, int& H)
 static void
 label_draw(const Fl_Label* o, int X, int Y, int W, int H, Fl_Align align)
 {
-  fl_font(o->font, o->size);
+  fl_font(o->font, TitleFontSz); // o->size);
   fl_color((Fl_Color)o->color);
   fl_draw(o->value, X+MENU_ICON_W+3, Y, W-MENU_ICON_W-3, H, align);
 }
@@ -132,7 +132,7 @@ label_draw(const Fl_Label* o, int X, int Y, int W, int H, Fl_Align align)
 static void
 label_measure(const Fl_Label* o, int& W, int& H)
 {
-  fl_font(o->font, o->size);
+  fl_font(o->font, TitleFontSz); // o->size);
   fl_measure(o->value, W, H);
   W += MENU_ICON_W+3;
   if (W > MAX_MENU_WIDTH) W = MAX_MENU_WIDTH;
@@ -289,7 +289,7 @@ init(Fl_Menu_Item& m, const char* data)
   m.labeltype(FL_NORMAL_LABEL);
   m.shortcut(0);
   m.labelfont(MENU_FONT_SLOT);
-  m.labelsize(MENU_FONT_SIZE);
+  m.labelsize(TitleFontSz); // MENU_FONT_SIZE);
   m.labelcolor(FL_FOREGROUND_COLOR);
 }
 
