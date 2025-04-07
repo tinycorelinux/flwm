@@ -113,14 +113,13 @@
 // thickness of the border edge on each side (includes XBORDER):
 #define LEFT 3
 #define RIGHT 4
-#define TOP 3
+#define TOP 2
 #define BOTTOM 4
 
 // font for titles (if not set, helvetica bold is used):
 // If this name is specific enough the font size is ignored.
-#define TITLE_FONT "-*-helvetica-medium-r-normal--*"
-#define TITLE_FONT_SIZE 12
-
+//#define TITLE_FONT "-*-helvetica-medium-r-normal--*"
+#define TITLE_FONT_SIZE 14
 // thickness of title bar (frame border thickness is added to it):
 #define TITLE_WIDTH (TITLE_FONT_SIZE+1)
 #ifdef TOPSIDE
@@ -142,10 +141,18 @@
 #define BUTTON_BOTTOM 	BOTTOM
 #endif
 
+extern int TitleFontSz;
+extern int TitleSz;
+extern int ButtonSz;
+extern int LftSz;
+extern int RgtSz;
+extern int TopSz;
+extern int BtmSz;
+extern float sf; //scale factor from Xft.dpi
+
 // how many pixels from edge for resize handle:
 #define RESIZE_EDGE 5
 // set this to zero to disable resizing by grabbing left/top edge:
-//#define RESIZE_LEFT 1
 #define RESIZE_TITLE_EDGE 1		// ML
 
 // must drag window this far off screen to snap the border off the screen:
@@ -195,8 +202,8 @@
 #define MENU_ICON_H 15
 
 // font to use in menus (if not set helvetica is used):
-#define MENU_FONT "-*-helvetica-medium-r-normal--*"
-#define MENU_FONT_SIZE 12
+//#define MENU_FONT "-*-helvetica-medium-r-normal--*"
+#define MENU_FONT_SIZE 14
 
 ////////////////////////////////////////////////////////////////
 // You probably don't want to change any of these:

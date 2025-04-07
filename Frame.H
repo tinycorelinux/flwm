@@ -102,10 +102,10 @@ class Frame : public Fl_Window {
   Desktop* desktop_;
 
   FrameButton close_button;
-  FrameButton iconize_button;
-  FrameButton max_h_button;
   FrameButton max_w_button;
   FrameButton min_w_button;
+  FrameButton max_h_button;
+  FrameButton iconize_button;
 
   int maximize_width();
   int maximize_height();

@@ -225,7 +225,7 @@ static void GrowShorter(void) { // Ctrl+Alt+PageDn
 	GrowFrame(0, -1);
 }
 
-static void ToggleVertMax(void) {// Ctrl+Alt+V
+void ToggleVertMax(void) {// Ctrl+Alt+V
 	static int nonmax_h = Fl::h() - 64;
 	static int nonmax_y = 32;
 	Frame* f = Frame::activeFrame();
@@ -240,7 +240,7 @@ static void ToggleVertMax(void) {// Ctrl+Alt+V
 	}
 }
 
-static void ToggleHorzMax(void) {// Ctrl+Alt+H
+void ToggleHorzMax(void) {// Ctrl+Alt+H
 	static int nonmax_w = Fl::w() - 64;
 	static int nonmax_x = 32;
 	Frame* f = Frame::activeFrame();
