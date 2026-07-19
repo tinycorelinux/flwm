@@ -257,9 +257,9 @@ spawn_cb(Fl_Widget*, void*n)
       else execl(name, name, (void*)0);
       fprintf(stderr, "flwm: can't run %s, %s\n", name, strerror(errno));
       XBell(fl_display, 70);
-      exit(1);
+      _exit(1);
     }
-    exit(0);
+    _exit(0);
   }
   wait((int *) 0);
 }
