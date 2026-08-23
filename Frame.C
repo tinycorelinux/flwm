@@ -120,15 +120,13 @@ Frame::Frame(XWindow window, XWindowAttributes* existing) :
   char * titlebar_color_str = getenv("FLWM_TITLEBAR_COLOR");
   int r = 0x90, g =  0x90, b = 0x90;
   int fields = 0;
-  if (titlebar_color_str) {
+  if (titlebar_color_str)
 	  fields = sscanf(titlebar_color_str, "%02X:%02X:%02X", &r, &g, &b);
-  }
-  if (titlebar_color_str && (fields == 3)) {
+
+  if (titlebar_color_str && (fields == 3))
 	  Fl::set_color(FL_BACKGROUND2_COLOR, r, g, b);
-  }
-  else {
+  else
 	  Fl::set_color(FL_BACKGROUND2_COLOR, 0x90, 0x90, 0x90);
-  }
 #else
   Fl::set_color(FL_BACKGROUND2_COLOR, 0x90, 0x90, 0x90);
 #endif
@@ -266,15 +264,14 @@ Frame::Frame(XWindow window, XWindowAttributes* existing) :
   }
 
   // try to detect programs that think "transient_for" means "no border":
-  if (transient_for_xid && !label() && !flag(NO_BORDER)) {
+  if (transient_for_xid && !label() && !flag(NO_BORDER))
     set_flag(THIN_BORDER);
-  }
+
   updateBorder();
   show_hide_buttons();
 
-  if (autoplace && !existing && !(transient_for() && (x() || y()))) {
+  if (autoplace && !existing && !(transient_for() && (x() || y())))
     place_window();
-  }
 
   // move window so contents and border are visible:
   x(force_x_onscreen(x(), w()));
@@ -333,11 +330,10 @@ Frame::Frame(XWindow window, XWindowAttributes* existing) :
 // Helper functions for "smart" window placement.
 int overlap1(int p1, int l1, int p2, int l2) {
   int ret = 0;
-  if(p1 <= p2 && p2 <= p1 + l1) {
+  if (p1 <= p2 && p2 <= p1 + l1)
     ret = min(p1 + l1 - p2, l2);
-  } else if (p2 <= p1 && p1 <= p2 + l2) {
+  else if (p2 <= p1 && p1 <= p2 + l2)
     ret = min(p2 + l2 - p1, l1);
-  }
   return ret;
 }
 
@@ -358,11 +354,10 @@ int getOverlap(int x, int y, int w, int h, Frame *first, Frame *self) {
       state = f->state();
       if (state == NORMAL || state == ICONIC) {
 	int o = overlap(x, y, w, h, f->x(), f->y(), f->w(), f->h());
-	if (state == NORMAL) {
+	if (state == NORMAL)
 	  ret = ret + o + (o>0?40000:0) + (o * f->active());
-	} else if (state == ICONIC) {
+	else if (state == ICONIC)
 	  ret = ret + o/2;
-	}
       }
     }
   }
@@ -403,31 +398,26 @@ void Frame::place_window() {
       } else if (j==1) {
 	tmp_y = max_y - _h;
       } else {
-	if (f2 == this) {
-	  f2 = f2->next;
-	}
-	if (!f2) {
-	  break;
-	}
-	tmp_y = f2->y() + f2->h();
-	f2 = f2->next;
+		if (f2 == this)
+		  f2 = f2->next;
+		if (!f2)
+		  break;
+
+		tmp_y = f2->y() + f2->h();
+		f2 = f2->next;
       }
 
       if ((tmp_x + _w <= max_x) && (tmp_y + _h <= max_y)) {
-	tmp_o = getOverlap(tmp_x, tmp_y, _w, _h, Frame::first, this);
-	if(tmp_o < min_overlap || min_overlap < 0) {
-	  best_x = tmp_x;
-	  best_y = tmp_y;
-	  min_overlap = tmp_o;
-	  if (min_overlap == 0) {
-	    break;
-	  }
-	}
+		tmp_o = getOverlap(tmp_x, tmp_y, _w, _h, Frame::first, this);
+		if (tmp_o < min_overlap || min_overlap < 0) {
+	  	  best_x = tmp_x;
+	  	  best_y = tmp_y;
+	  	  min_overlap = tmp_o;
+	  	  if (min_overlap == 0) break;
+	    }
       }
     }
-    if (min_overlap == 0) {
-      break;
-    }
+    if (min_overlap == 0) break;
   }
   x(best_x);
   y(best_y);
@@ -1185,7 +1175,7 @@ void Frame::sendConfigureNotify() const {
 
 // move the pointer inside the window:
 void Frame::warp_pointer() {
-	if(DoNotWarp) return;
+	if (DoNotWarp) return;
   int X,Y; Fl::get_mouse(X,Y);
   X -= x();
   int Xi = X;
@@ -1528,7 +1518,7 @@ void Frame::draw() {
 #endif
       fl_color(labelcolor());
       fl_font(TITLE_FONT_SLOT, TitleFontSz);
-      if(label() && *label())
+      if (label() && *label())
 #ifndef HAVE_XFT
       draw_rotated90(label(), 1, label_y+3, left-1, label_h-3,
 	       Fl_Align(FL_ALIGN_TOP|FL_ALIGN_CLIP));
@@ -1798,7 +1788,7 @@ int Frame::handle(int e) {
 
   case FL_PUSH:
 	// See if user double clicked on titlebar (or window frame).
-	if(!cursor_inside && (Fl::event_button() == 1) && Fl::event_clicks())
+	if (!cursor_inside && (Fl::event_button() == 1) && Fl::event_clicks())
 	{
 		set_cursor(-1);
 		ToggleWinMax();	// Toggles window size between normal and maximized.
@@ -1811,15 +1801,13 @@ int Frame::handle(int e) {
       return 1;
     }
     ix = x(); iy = y(); iw = w(); ih = h();
-    if (!max_w_button.value() && !min_w_button.value()) {
+    if (!max_w_button.value() && !min_w_button.value())
       restore_x = ix+left; restore_w = iw-dwidth;
-    }
 #if MINIMIZE_HEIGHT
     if (!min_w_button.value())
 #endif
-    if (!max_h_button.value()) {
+    if (!max_h_button.value())
       restore_y = iy+top; restore_h = ih-dwidth;
-    }
     what = mouse_location();
     if (Fl::event_button() > 1) what = 0; // middle button does drag
     dx = Fl::event_x_root()-ix;
@@ -1900,9 +1888,9 @@ int Frame::handle(int e) {
 	restore_h = nh;
 #endif
       } else {
-	if (inc_w > 1) nw = ((nw-MINW+inc_w/2)/inc_w)*inc_w+MINW;
-	if (nw < MINW) nw = MINW;
-	else if (max_w && nw > max_w+dwidth) nw = max_w+dwidth;
+		if (inc_w > 1) nw = ((nw-MINW+inc_w/2)/inc_w)*inc_w+MINW;
+		if (nw < MINW) nw = MINW;
+		else if (max_w && nw > max_w+dwidth) nw = max_w+dwidth;
       }
       int MINH = min_h+dheight;
       const int MINH_B = BUTTON_H+BUTTON_TOP+BOTTOM;
@@ -1966,7 +1954,7 @@ int Frame::handle(const XEvent* ei) {
     return 1;}
 
   case DestroyNotify: {
-    //const XDestroyWindowEvent* e = &(ei->xdestroywindow);
+    // const XDestroyWindowEvent* e = &(ei->xdestroywindow);
     delete this;
     return 1;}
 
